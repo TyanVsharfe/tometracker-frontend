@@ -10,32 +10,16 @@ import Col from 'react-bootstrap/Col';
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Navigation: React.FC = () => {
-    //const [isLoading, setIsLoading] = useState(false);
-    //const [searchResults, setSearchResults] = useState(null);
-    //const [gameName, setGameName] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
-    // const handleSearchSubmit = async () => {
-    //     localStorage.removeItem('game_list');
-    //     //setIsLoading(true);
-    //     localStorage.setItem('loading', true);
-    //     const gameName = document.getElementById('gameNameInput').value;
-    //     console.log("Game title - " + gameName)
-    //     try {
-    //         const data = await getIdgbGamesList(gameName);
-    //
-    //         console.log("Data " + data);
-    //         //console.log("SearchResults до set " + searchResults);
-    //         setSearchResults(data);
-    //         localStorage.setItem('game_list', JSON.stringify(data));
-    //         //console.log("SearchResults после set " + searchResults);
-    //     } catch (error) {
-    //         console.error('Ошибка при выполнении запроса:', error);
-    //     } finally {
-    //         //setIsLoading(false);
-    //     }
-    // };
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault(); // Предотвращаем стандартное поведение формы
+        navigate(`/search?q=${encodeURIComponent(searchTerm)}`); // Перенаправляем на нужный адрес
+    };
 
     return (
         <Navbar data-bs-theme="dark" expand="lg" className="bg-body-tertiary">
@@ -45,10 +29,10 @@ const Navigation: React.FC = () => {
                     <Nav className="container-fluid">
                         <Nav.Link href="/main">Home</Nav.Link>
                         <Nav.Link href="/search">Search</Nav.Link>
-                        <Nav.Link href="/account/games">Account</Nav.Link>
+                        <Nav.Link href="/account/books">Account</Nav.Link>
                         {/*<Nav.Link href="/search"><i className="bi bi-search" style={{fontSize: '2rem'}}></i></Nav.Link>
                         <Nav.Link href="/account"><i className="bi bi-person-circle" style={{fontSize: '2rem'}}></i></Nav.Link>*/}
-                        <Form onSubmit="">
+                        <Form onSubmit={handleSubmit}>
                             <Row>
                                 <Col xs="auto">
                                     <Form.Control
@@ -56,8 +40,8 @@ const Navigation: React.FC = () => {
                                         placeholder="Search"
                                         className=" mr-sm-2"
                                         id={"gameNameInput"}
-                                        value=""
-                                        onChange=""
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
                                     />
                                 </Col>
                                 <Col xs="auto">
