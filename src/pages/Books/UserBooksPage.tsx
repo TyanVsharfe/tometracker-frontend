@@ -8,6 +8,7 @@ import Card from "react-bootstrap/Card";
 import {Book, getBooks} from "../../services/bookService.ts";
 
 import "../style/style.css"
+import "../style/book-card.css"
 
 function UserBooksPage() {
     const [userBooks, setUserBooks] = useState([]);
@@ -55,10 +56,14 @@ function UserBooksPage() {
                     {
                         booksResults.map((book: Book, index: number) => (
                             <Col key={index} style={{paddingBottom: '20px'}}>
-                                <Card data-bs-theme="dark" style={{ width: '9rem'}}  className="text-center" border='light'>
-                                    <Card.Img variant="top" src={book?.coverUrl || ''}/>
-                                    <Card.Body style={{ height: '135px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-                                        <Card.Title>{book.title}</Card.Title>
+                                <Card data-bs-theme='dark' style={{ width: '9rem'}}  className='text-center' border='light'>
+                                    <Card.Img className='book__cover' variant="top" src={book?.coverUrl || ''}/>
+                                    <Card.Body className='book__body'>
+                                        <Container style={{height:'60px'}}>
+                                            <Card.Title className="book__title">
+                                                {book.title}
+                                            </Card.Title>
+                                        </Container>
                                         <Card.Text>
                                             <Container>
                                                 {/*{book.platforms && (*/}
@@ -66,9 +71,9 @@ function UserBooksPage() {
                                                 {/*)}*/}
                                             </Container>
                                         </Card.Text>
-                                        <Button style={{ width: '80%'}} variant="primary" href={`/books/${book.gbId}`}>Get info</Button>
+                                        <Button style={{ width: '80%'}} variant='primary' href={`/books/${book.gbId}`}>Get info</Button>
                                     </Card.Body>
-                                    <Card.Footer className="text-muted">
+                                    <Card.Footer className='text-muted'>
                                         {/*{book.first_release_date*/}
                                         {/*    ? new Date(book.first_release_date * 1000).toLocaleDateString()*/}
                                         {/*    : book.release_dates && book.release_dates[0].y}*/}
@@ -104,7 +109,7 @@ function UserBooksPage() {
 
             <Container>
                 <Stack className=".d-flex justify-content-center align-items-center">
-                    <h1>My books</h1>
+                    <h1 className='page-title'>My books</h1>
                     <Stack direction="horizontal" className=".d-flex justify-content-md-center align-items-center" gap={4}>
                         <Button variant="outline-primary" disabled={activeFilterButtonIndex === 0} onClick={() => {
                             setActiveFilterButton(0)

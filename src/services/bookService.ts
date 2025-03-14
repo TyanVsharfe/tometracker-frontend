@@ -9,6 +9,11 @@ export interface gBook {
         title: string;
         imageLinks?: {
             thumbnail?: string;
+            smallThumbnail?: string;
+            small?: string;
+            medium?: string;
+            large?: string;
+            extraLarge?: string;
         };
         description?: string;
         pageCount?: number;
@@ -59,7 +64,8 @@ export const deleteBook = async (gbId: string | undefined) => {
 };
 
 export const getGBook = async (gbId: string | undefined) => {
-    const response = await axios.get(`${BASE_URL}/gbooks/${gbId}`);
+    //const response = await axios.get(`${BASE_URL}/gbooks/${gbId}`);
+    const response = await axios.get(`${BASE_URL}/gbooks/v2/${gbId}`);
     return response.data;
 };
 

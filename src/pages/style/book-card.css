@@ -1,0 +1,35 @@
+.book__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    font-size: 14px;
+}
+
+.book__cover {
+    width: 145px;
+    height: 210px;
+    object-fit: cover;
+}
+
+.book__body {
+    height: 140px;
+    padding-bottom: 5px;
+}
+
+.book__button {
+    width: 140px;
+}
+
+.book__prices h4{
+    font-size: 14px;
+}
+
+@media (max-width: 1000px) {
+    .book-page {
+        display: flex;
+        flex-direction: column;
+    }
+}

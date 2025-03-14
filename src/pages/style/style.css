@@ -1,3 +1,8 @@
+.page-title {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
 #user-book-list {
     display: flex;
     flex-direction: row;

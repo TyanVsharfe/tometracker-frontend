@@ -8,6 +8,8 @@ import {enumStatus} from "../utils/Enums.ts"
 import {useBookContext} from "./BookProvider.tsx";
 import {useParams} from "react-router-dom";
 
+import "../pages/style/book-card.css"
+
 function BookControls() {
     const { setUserRating, setStatus } = useBookContext();
     const gbId = useParams<{ id: string }>();
@@ -47,8 +49,8 @@ function BookControls() {
                         </Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
-                <Button variant={"primary"} type={"button"} onClick={handleShow}>Change rating</Button>
-                <Button variant={"danger"} type={"button"} onClick={() => {deleteBook(gbId.id).then()}}>Delete book</Button>
+                <Button className="book__button" variant={"primary"} type={"button"} onClick={handleShow}>Change rating</Button>
+                <Button className="book__button" variant={"danger"} type={"button"} onClick={() => {deleteBook(gbId.id).then()}}>Delete book</Button>
             </Stack>
 
             <Modal show={show} centered={true} onHide={handleClose}
