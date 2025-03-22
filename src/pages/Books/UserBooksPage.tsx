@@ -5,19 +5,28 @@ import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
-import {Book, getBooks} from "../../services/bookService.ts";
+import {getBooks} from "../../services/userBookService.ts";
 
 import "../style/style.css"
 import "../style/book-card.css"
+import {Book} from "../../services/bookService.ts";
+import {useNavigate} from "react-router-dom";
+import {checkSession} from "../../services/authService.ts";
 
 function UserBooksPage() {
     const [userBooks, setUserBooks] = useState([]);
     const [filterStatus, setFilterStatus] = useState("");
     const [activeFilterButtonIndex, setActiveFilterButton] = useState(0);
+    const navigate = useNavigate();
 
 
     useEffect(() => {
-       handleUserBooks()
+        const isLogin = checkSession();
+        isLogin.then((is) => {
+            if (!is)
+                navigate('/login')
+        })
+        handleUserBooks()
     }, [filterStatus]);
 
     const handleUserBooks = () => {
@@ -71,7 +80,7 @@ function UserBooksPage() {
                                                 {/*)}*/}
                                             </Container>
                                         </Card.Text>
-                                        <Button style={{ width: '80%'}} variant='primary' href={`/books/${book.gbId}`}>Get info</Button>
+                                        <Button style={{ width: '90%', fontSize: '12px'}} variant='primary' href={`/books/${book.gbId}`}>Подробнее</Button>
                                     </Card.Body>
                                     <Card.Footer className='text-muted'>
                                         {/*{book.first_release_date*/}
@@ -97,44 +106,44 @@ function UserBooksPage() {
         <Container style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
             <Nav variant="tabs" className="justify-content-center" defaultActiveKey="" style={{width: "50%"}}>
                 <Nav.Item>
-                    <Nav.Link href="">Account info</Nav.Link>
+                    <Nav.Link href="">Информация о аккаунте</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link href="">My books</Nav.Link>
+                    <Nav.Link href="">Мои книги</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link href="">Settings</Nav.Link>
+                    <Nav.Link href="">Настройки</Nav.Link>
                 </Nav.Item>
             </Nav>
 
             <Container>
                 <Stack className=".d-flex justify-content-center align-items-center">
-                    <h1 className='page-title'>My books</h1>
+                    <h1 className='page-title'>Мои книги</h1>
                     <Stack direction="horizontal" className=".d-flex justify-content-md-center align-items-center" gap={4}>
                         <Button variant="outline-primary" disabled={activeFilterButtonIndex === 0} onClick={() => {
                             setActiveFilterButton(0)
                             setFilterStatus("")
-                        }}>All games</Button>
+                        }}>Все книги</Button>
                         <Button variant="outline-primary" disabled={activeFilterButtonIndex === 1} onClick={() => {
                             setActiveFilterButton(1)
                             setFilterStatus("Completed")
-                        }}>Completed</Button>
+                        }}>Прочитано</Button>
                         <Button variant="outline-primary" disabled={activeFilterButtonIndex === 2} onClick={() => {
                             setActiveFilterButton(2)
                             setFilterStatus("Playing")
-                        }}>Playing</Button>
+                        }}>Читаю</Button>
                         <Button variant="outline-primary" disabled={activeFilterButtonIndex === 3} onClick={() => {
                             setActiveFilterButton(3)
                             setFilterStatus("Planned")
-                        }}>Planned</Button>
+                        }}>В планах</Button>
                         <Button variant="outline-primary" disabled={activeFilterButtonIndex === 4} onClick={() => {
                             setActiveFilterButton(4)
                             setFilterStatus("Abandoned")
-                        }}>Abandoned</Button>
+                        }}>Заброшено</Button>
                         <Button variant="outline-primary" disabled={activeFilterButtonIndex === 5} onClick={() => {
                             setActiveFilterButton(5)
                             setFilterStatus("None")
-                        }}>Without status</Button>
+                        }}>Без статуса</Button>
                     </Stack>
                 </Stack>
                 <br/>

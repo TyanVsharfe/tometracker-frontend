@@ -3,7 +3,7 @@ import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import {Button, ListGroup, ListGroupItem, Stack} from "react-bootstrap";
 import {Link, useParams, useSearchParams} from "react-router-dom";
-import {addBook, Book, checkEntity, gBook, getBook, getGBook} from "../../services/bookService.ts";
+import {addBook, Book, gBook, getGBook} from "../../services/bookService.ts";
 import BookControls from "../../components/BookControls.tsx";
 import {formatDate} from "../../utils/Utils.ts";
 import BookInfo from "../../components/BookInfo.tsx";
@@ -11,11 +11,12 @@ import {BookProvider} from "../../components/BookProvider.tsx";
 import {BookPrice, findBookPrices} from "../../services/bookPriceService.ts";
 
 import "../style/book-card.css"
+import {addUserBook, checkEntity, getUserBook, UserBook} from "../../services/userBookService.ts";
 
 function BookPage() {
     const [book, setBook] = useState<gBook>();
     const [bookPrice, setBookPrice] = useState<BookPrice[]>();
-    const [uBook, setUBook] = useState<Book>();
+    const [uBook, setUBook] = useState<UserBook>();
     const [bookHasStatus, setBookHasStatus] = useState(false);
     const gbId = useParams<{ id: string }>();
 
@@ -29,9 +30,11 @@ function BookPage() {
                     setBookHasStatus(status);
 
                     if (status) {
-                        const bookData: Book = await getBook(gbId.id);
+                        const bookData: UserBook = await getUserBook(gbId.id);
+                        console.log("!!!!");
+                        console.log(bookData);
                         setUBook(bookData);
-                        console.log(uBook?.userRating);
+                        console.log(uBook?.book);
                         console.log(uBook?.status);
                     }
                 }
@@ -44,9 +47,11 @@ function BookPage() {
                     localStorage.setItem(keyStorage, JSON.stringify(data));
                     setBook(data);
                     console.log(data?.volumeInfo?.industryIdentifiers);
-                    findBookPrices(data?.volumeInfo?.industryIdentifiers[1].identifier).then((bookPrice) => {
-                        setBookPrice(bookPrice);
-                        console.log(bookPrice)
+                    findBookPrices(data?.volumeInfo?.title).then((bookPrice) => {
+                        console.log(bookPrice);
+                        const bookPrices = bookPrice.map((arr: BookPrice[]) => arr[0])
+                            .filter((item: BookPrice): item is BookPrice => item !== undefined && item.price !== "");;
+                        setBookPrice(bookPrices);
                     });
                 });
 
@@ -60,9 +65,9 @@ function BookPage() {
 
     return (
         <BookProvider initialStatus={uBook?.status} initialUserRating={uBook?.userRating}>
-            <Stack className="d-flex justify-content-center align-items-center book-page" direction="horizontal" style={{paddingTop: "20px"}} gap={5}>
+            <Stack className="d-flex justify-content-center align-items-start book-page" direction="horizontal" style={{paddingTop: "20px"}} gap={5}>
                 <Card data-bs-theme="dark" style={{width: '15rem'}} className="text-center" border="light">
-                    <Card.Img variant="top" src={book?.volumeInfo?.imageLinks?.medium || ''}/>
+                    <Card.Img variant="top" src={book?.volumeInfo?.imageLinks?.thumbnail || ''}/>
                     <Card.Body>
                         <Card.Title>{book?.volumeInfo.title}</Card.Title>
                         <Card.Text>
@@ -72,24 +77,30 @@ function BookPage() {
                         {bookHasStatus ? (
                             <BookControls/>
                         ) : (
-                            <Button type={"button"} onClick={() => {addBook(book).then(() => setBookHasStatus(true))}}>Add book</Button>
+                            <Button type={"button"} onClick={() => {
+                                addBook(book).then(() => {
+                                    addUserBook(gbId.id).then();
+                                    setBookHasStatus(true)
+                                })
+                            }}>Добавить книгу</Button>
                         )}
                     </Card.Body>
                     <Card.Footer className="text-muted">
-                        {formatDate(book?.volumeInfo?.publishedDate)}
+                        {formatDate(book?.volumeInfo?.publishedDate) === undefined ? "Неизвестно" : formatDate(book?.volumeInfo?.publishedDate)}
                     </Card.Footer>
                 </Card>
 
                 <div style={{maxWidth: '500px'}}>
-                    <h2>Book Information</h2>
+                    <h2>Описание:</h2>
                     <span>{book?.volumeInfo?.description}</span>
                 </div>
 
                 <div>
                     {bookHasStatus ? (<BookInfo/>): <></>}
                     <Card data-bs-theme="dark" style={{width: '15rem'}}>
-                        <Card.Header></Card.Header>
+                        <Card.Header>Информация о книге:</Card.Header>
                         <Card.Body>
+                            Автор: {book?.volumeInfo?.authors[0]}<br/>
                             Количество страниц: {book?.volumeInfo?.pageCount}<br/>
                             Издатель: {book?.volumeInfo?.publisher}
                         </Card.Body>
@@ -100,14 +111,14 @@ function BookPage() {
             </Stack>
             <Container style={{display: 'flex', flexDirection: 'column'}}>
                 {bookPrice != undefined ? (
-                    <Card data-bs-theme="dark" className='text-center book__prices' border='light'>
-                        <Card.Body style={{display: 'flex', justifyContent: 'space-between'}}>
-                            <ListGroup horizontal>
+                    <Card className='text-center book__prices' border='light'>
+                        <Card.Body>
+                            <ListGroup data-bs-theme='dark' style={{display: 'flex', justifyContent: 'space-between'}} horizontal>
                                 {
                                     bookPrice.map(book => (
-                                        <ListGroupItem>
+                                        <ListGroupItem style={{width: "140px", display: 'flex', flexDirection: 'column'}}  variant='secondary'>
                                             <h4>{book.shop}</h4>
-                                            <h4>Цена: {book.price}</h4>
+                                            <h4 style={{height: '30px'}}>Цена: {book.price}</h4>
                                             <Card.Link style={{
                                                 textDecoration: 'none',
                                                 pointerEvents: book.url ? 'auto' : 'none',

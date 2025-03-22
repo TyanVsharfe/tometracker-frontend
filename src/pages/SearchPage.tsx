@@ -48,7 +48,7 @@ function SearchPage() {
                             <Button   style={{
                                 padding: '8px 16px',
                                 fontSize: '12px',
-                            }}  variant='primary' href={`/books/${book.id}`}>Get info</Button>
+                            }}  variant='primary' href={`/books/${book.id}`}>Подробнее</Button>
                         </Card.Body>
                     </Card>
                 </Col>
@@ -59,7 +59,7 @@ function SearchPage() {
     return (
         <Container>
             <Stack className=".d-flex justify-content-center align-items-center">
-                <h2 className='page-title'>Search result</h2>
+                <h2 className='page-title'>Результаты</h2>
                 <Row className="flex-wrap" style={{ display: 'flex', alignItems: 'flex-end' }} gap="4">
                     {renderSearchResults()}
                 </Row>

@@ -1,14 +1,15 @@
 import Card from "react-bootstrap/Card";
 import {useBookContext} from "./BookProvider.tsx";
+import {getStatusTranslation} from "../utils/Enums.ts";
 
 function BookInfo() {
     const { userRating, status } = useBookContext();
 
     return (
         <Card data-bs-theme="dark" style={{width: '15rem'}} className="text-center" border="light">
-            <Card.Header>User Book Information</Card.Header>
+            <Card.Header>Информация пользователя о книге:</Card.Header>
             <Card.Body>
-                <Card.Title>Status: {status}</Card.Title>
+                <Card.Title>Статус: {getStatusTranslation(status) === undefined ? "Отсутствует" : getStatusTranslation(status)}</Card.Title>
                 <Card.Text>
                     <br/>
                     {/*<p>Graphics</p>*/}
@@ -16,7 +17,7 @@ function BookInfo() {
                     {/*<p>Gameplay</p>*/}
                 </Card.Text>
             </Card.Body>
-            <Card.Footer>Final rating: {userRating === undefined ? "no rating" : userRating}</Card.Footer>
+            <Card.Footer>Оценка: {((userRating === undefined) || (userRating === null)) ? "Отсутствует" : userRating}</Card.Footer>
         </Card>
     );
 }

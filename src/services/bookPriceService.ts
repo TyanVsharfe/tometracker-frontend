@@ -2,6 +2,10 @@ import axios from "axios";
 
 const BASE_URL = 'http://localhost:8000';
 
+export interface BookPriceList {
+    bookPriceList: BookPrice[];
+}
+
 export interface BookPrice {
     shop: string;
     title: string;
@@ -9,9 +13,9 @@ export interface BookPrice {
     url: string;
 }
 
-export const findBookPrices = async (isbn: string | undefined) => {
+export const findBookPrices = async (searchQuery: string | undefined) => {
     const query = {
-        "isbn": Number(isbn),
+        "searchQuery": searchQuery,
     };
 
     const headers = { headers: {
@@ -19,6 +23,5 @@ export const findBookPrices = async (isbn: string | undefined) => {
         }};
 
     const response = await axios.post(`${BASE_URL}/find`, query, headers);
-    console.log(isbn)
     return response.data;
 };

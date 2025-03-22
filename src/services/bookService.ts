@@ -6,6 +6,7 @@ const BASE_URL = 'http://localhost:8080';
 export interface gBook {
     id: string;
     volumeInfo: {
+        authors: string[];
         title: string;
         imageLinks?: {
             thumbnail?: string;
@@ -48,18 +49,9 @@ export const searchBooks = async (searchQuery : string) => {
     return response.data;
 };
 
-export const getBooks = async (status: string) => {
-    const response = await axios.get(`${BASE_URL}/books/all?status=${status}`);
-    return response.data;
-};
-
-export const getBook = async (gbId: string | undefined) => {
-    const response = await axios.get(`${BASE_URL}/books/${gbId}`);
-    return response.data;
-};
-
 export const deleteBook = async (gbId: string | undefined) => {
-    const response = await axios.delete(`${BASE_URL}/books/${gbId}`);
+    const headers = {withCredentials: true};
+    const response = await axios.delete(`${BASE_URL}/books/${gbId}`, headers);
     return response.data;
 };
 
@@ -87,57 +79,13 @@ export const addBook = async (book: gBook | undefined) => {
 
     const headers = { headers: {
             'Content-Type': 'application/json'
-        }};
+        },
+        withCredentials: true};
 
     const response = await axios.post(`${BASE_URL}/books`, query, headers);
     return response.data;
 };
 
-export const updateBookStatus = async (gbId: string | undefined, status: number) => {
-    const query = {
-        "status": status,
-    };
 
-    console.log(query);
 
-    const headers = { headers: {
-            'Content-Type': 'application/json'
-        }};
 
-    const response = await axios.put(`${BASE_URL}/books/${gbId}`, query, headers);
-    return response.data;
-};
-
-export const updateBookRating = async (gbId: string | undefined, rating: number) => {
-    const query = {
-        "userRating": rating * 10,
-    };
-
-    console.log(query);
-
-    const headers = { headers: {
-            'Content-Type': 'application/json'
-        }};
-
-    const response = await axios.put(`${BASE_URL}/books/${gbId}`, query, headers);
-
-    return rating;
-};
-
-export const checkEntity = async (gbId: string | undefined) => {
-    try {
-        const response = await fetch(`${BASE_URL}/books/checkEntity/${gbId}`);
-
-        if (response.ok) {
-            const result = await response.json();
-            console.log(result);
-            return result;
-        } else {
-            console.error('entity validation error:', response.status);
-            return null;
-        }
-    } catch (error) {
-        console.error('an error occurred:', error);
-        return null;
-    }
-};
