@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import {Route, Routes, useLocation, useNavigate} from 'react-router-dom';
 //import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navigation from "./components/Navbar.tsx";
@@ -8,16 +8,45 @@ import BookPage from "./pages/Books/BookPage.tsx";
 import UserBooksPage from "./pages/Books/UserBooksPage.tsx";
 import LoginPage from "./pages/Auth/LoginPage.tsx";
 import RegisterPage from "./pages/Auth/RegisterPage.tsx";
+import {useEffect, useState} from "react";
+import {useSelector, useDispatch} from "react-redux";
+import {RootState} from "./store/store.ts";
+import {verifySession} from "./store/authSlice.ts";
 
 function App() {
-    // const user = useSelector((state: RootState) => state.auth.user); // Получаем
-    // const dispatch = useDispatch();
-    // useEffect(() => {
-    //     const user = localStorage.getItem('user');
-    //     if (user) {
-    //         dispatch(login(JSON.parse(user))); // Восстанавливаем пользователя из localStorage
-    //     }
-    // }, [dispatch]);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const isLogin = useSelector((state: RootState) => state.auth.isLogin);
+    const loading = useSelector((state: RootState) => state.auth.loading);
+    const [isInitialCheckDone, setIsInitialCheckDone] = useState(false);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            // Получаем результат проверки сессии напрямую
+            const isAuthenticated = await dispatch(verifySession() as any).unwrap();
+
+            const requiresAuthPaths = ['/account/books'];
+            const isAuthRequired = requiresAuthPaths.some((path) =>
+                location.pathname.startsWith(path)
+            );
+            const isLoginPage = location.pathname === '/login';
+
+            console.log(
+                'isAuthenticated (from verifySession):', isAuthenticated,
+                'isLogin (from Redux):', isLogin,
+                'loading:', loading,
+                'path:', location.pathname
+            );
+
+            if (!loading && !isAuthenticated && isAuthRequired && !isLoginPage) {
+                navigate('/login');
+            }
+        };
+
+        checkAuth();
+    }, [dispatch, navigate, location.pathname]);
 
   return (
     <>

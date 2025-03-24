@@ -50,9 +50,29 @@ export const registerUser = async (user: UserLogin | undefined) => {
 };
 
 export const checkSession = async () => {
-    const headers = {withCredentials: true};
+    try {
+        const response = await axios.get(`${BASE_URL}/check-session`, {
+            withCredentials: true,
+        });
+        console.log(response.status === 200);
+        return response.status === 200;
+    } catch (error) {
+        if (error.response) {
+            console.log('Error status:', error.response.status);
+        } else {
+            console.log('Error message:', error.message);
+        }
+        return false;
+    }
+};
 
-    const response = await axios.get(`${BASE_URL}/check-session`, headers);
-
-    return response.status === 200;
+export const apiRequest = async (response: axios.AxiosResponse<any>) => {
+    if (response.status === 401) {
+        const isAuthenticated = await checkSession();
+        if (!isAuthenticated) {
+            window.location.href = '/login';
+        }
+        throw new Error('Unauthorized');
+    }
+    return response;
 };

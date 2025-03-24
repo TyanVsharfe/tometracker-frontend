@@ -4,27 +4,29 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import {loginUser, User} from "../../services/authService.ts";
 import {useNavigate} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {verifySession} from "../../store/authSlice.ts";
 
 const LoginPage: React.FC = () => {
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('')
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const user: User = {username: login, password: password};
         await loginUser(user)
         navigate('/account/books')
-        
-        // try {
-        //     const user = await loginUser({ login: login, password });
-        //     dispatch(login(user));
-        //     localStorage.setItem('user', JSON.stringify(user));
-        //     navigate('/');
-        // } catch (error) {
-        //     console.error('Login failed:', error);
-        //     alert('Login failed. Please check your credentials.');
-        // }
+
+        try {
+            await loginUser(user);
+            dispatch(verifySession() as any);
+            navigate('/account/books');
+        } catch (error) {
+            console.error('Login failed:', error);
+            alert('Login failed. Please check your credentials.');
+        }
     };
 
 

@@ -1,5 +1,6 @@
 import axios from "axios";
 import {Note} from "./noteService.ts";
+import {apiRequest} from "./authService.ts";
 
 const BASE_URL = 'http://localhost:8080/users';
 
@@ -21,6 +22,9 @@ export const getBooks = async (status: string) => {
     const headers = {withCredentials: true};
 
     const response = await axios.get(`${BASE_URL}/books/all?status=${status}`, headers);
+
+    apiRequest(response)
+
     return response.data;
 };
 
@@ -28,6 +32,9 @@ export const getUserBook = async (gbId: string | undefined) => {
     const headers = {withCredentials: true};
 
     const response = await axios.get(`${BASE_URL}/books/${gbId}`, headers);
+
+    apiRequest(response)
+
     console.log(response.data);
     return response.data;
 };
@@ -36,6 +43,9 @@ export const deleteUserBook = async (gbId: string | undefined) => {
     const headers = {withCredentials: true};
 
     const response = await axios.delete(`${BASE_URL}/books/${gbId}`, headers);
+
+    apiRequest(response)
+
     console.log(response.data);
     return response.data;
 };
@@ -44,6 +54,9 @@ export const addUserBook = async (gbId: string | undefined) => {
     const headers = {withCredentials: true};
 
     const response = await axios.post(`${BASE_URL}/books/${gbId}`, {}, headers);
+
+    apiRequest(response)
+
     console.log(response.data);
     return response.data;
 };
@@ -61,6 +74,9 @@ export const updateBookStatus = async (gbId: string | undefined, status: number)
         withCredentials: true};
 
     const response = await axios.put(`${BASE_URL}/books/${gbId}`, query, headers);
+
+    apiRequest(response)
+
     return response.data;
 };
 
@@ -77,6 +93,8 @@ export const updateBookRating = async (gbId: string | undefined, rating: number)
         withCredentials: true};
 
     const response = await axios.put(`${BASE_URL}/books/${gbId}`, query, headers);
+
+    apiRequest(response)
 
     return rating;
 };

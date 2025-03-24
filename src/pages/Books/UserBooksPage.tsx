@@ -10,22 +10,14 @@ import {getBooks} from "../../services/userBookService.ts";
 import "../style/style.css"
 import "../style/book-card.css"
 import {Book} from "../../services/bookService.ts";
-import {useNavigate} from "react-router-dom";
-import {checkSession} from "../../services/authService.ts";
 
 function UserBooksPage() {
     const [userBooks, setUserBooks] = useState([]);
     const [filterStatus, setFilterStatus] = useState("");
     const [activeFilterButtonIndex, setActiveFilterButton] = useState(0);
-    const navigate = useNavigate();
 
 
     useEffect(() => {
-        const isLogin = checkSession();
-        isLogin.then((is) => {
-            if (!is)
-                navigate('/login')
-        })
         handleUserBooks()
     }, [filterStatus]);
 
@@ -61,10 +53,10 @@ function UserBooksPage() {
 
         if (Array.isArray(booksResults)) {
             return (
-                <Container className="justify-content-center align-items-center books-list">
+                <Container className="justify-content-start align-items-center books-list">
                     {
                         booksResults.map((book: Book, index: number) => (
-                            <Col key={index} style={{paddingBottom: '20px'}}>
+                            <Col key={index} style={{paddingBottom: '20px', flex: '0 1 calc(20% - 10px)'}}>
                                 <Card data-bs-theme='dark' style={{ width: '9rem'}}  className='text-center' border='light'>
                                     <Card.Img className='book__cover' variant="top" src={book?.coverUrl || ''}/>
                                     <Card.Body className='book__body'>

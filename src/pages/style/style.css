@@ -30,8 +30,10 @@
 }
 
 .books-list {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    width: 65rem;
+    justify-content: space-around;
 }
 
 @media (max-width: 768px) {
