@@ -14,6 +14,10 @@
     font-size: 14px;
 }
 
+.book-price__item {
+    vertical-align: middle;
+}
+
 .book__description {
 }
 

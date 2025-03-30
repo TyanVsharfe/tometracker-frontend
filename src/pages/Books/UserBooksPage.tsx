@@ -10,6 +10,7 @@ import {getBooks} from "../../services/userBookService.ts";
 import "../style/style.css"
 import "../style/book-card.css"
 import {Book} from "../../services/bookService.ts";
+import Title from "../../components/Title.tsx";
 
 function UserBooksPage() {
     const [userBooks, setUserBooks] = useState([]);

@@ -43,7 +43,7 @@ const Navigation: React.FC = () => {
                 <Navbar id="basic-navbar-nav">
                     <Nav className="container-fluid">
                         <Nav.Link className='nav__link' href="/main">Главная</Nav.Link>
-                        <Nav.Link className='nav__link' href="/search">Поиск</Nav.Link>
+                        <Nav.Link className='nav__link' href="/search" style={{textAlign: 'center'}}>Поиск</Nav.Link>
                         {isLogin ? (
                             <Nav.Link className='nav__link' href="/account/books">Аккаунт</Nav.Link>
                         ) : (
