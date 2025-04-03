@@ -11,6 +11,7 @@ import "../style/style.css"
 import "../style/book-card.css"
 import {Book} from "../../services/bookService.ts";
 import Title from "../../components/Title.tsx";
+import AccountNav from "../../components/AccountNav.tsx";
 
 function UserBooksPage() {
     const [userBooks, setUserBooks] = useState([]);
@@ -97,17 +98,7 @@ function UserBooksPage() {
 
     return (
         <Container style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
-            <Nav variant="tabs" className="justify-content-center" defaultActiveKey="" style={{width: "50%"}}>
-                <Nav.Item>
-                    <Nav.Link href="">Информация о аккаунте</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link href="">Мои книги</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link href="">Настройки</Nav.Link>
-                </Nav.Item>
-            </Nav>
+            <AccountNav/>
 
             <Container>
                 <Stack className=".d-flex justify-content-center align-items-center">

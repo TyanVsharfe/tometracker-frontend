@@ -5,13 +5,22 @@ import {Button, ListGroup, ListGroupItem, Stack, Table} from "react-bootstrap";
 import {Link, useNavigate, useParams, useSearchParams} from "react-router-dom";
 import {addBook, Book, gBook, getGBook} from "../../services/bookService.ts";
 import BookControls from "../../components/BookControls.tsx";
-import {formatDate} from "../../utils/Utils.ts";
+import {formatDate, getScoreClass} from "../../utils/Utils.ts";
 import BookInfo from "../../components/BookInfo.tsx";
 import {BookProvider} from "../../components/BookProvider.tsx";
+import Form from "react-bootstrap/Form";
 import {BookPrice, findBookPrices, ShopBookPrice} from "../../services/bookPriceService.ts";
 
 import "../style/book-card.css"
-import {addUserBook, checkEntity, getUserBook, UserBook} from "../../services/userBookService.ts";
+import "../style/modal.css"
+import {
+    addUserBook,
+    BookReview,
+    checkEntity, deleteBookReview,
+    getAllBookReviews,
+    getUserBook, updateBookReview,
+    UserBook
+} from "../../services/userBookService.ts";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store/store.ts";
 import Modal from "react-bootstrap/Modal";
@@ -21,15 +30,24 @@ function BookPage() {
     const [book, setBook] = useState<gBook>();
     const [bookPrice, setBookPrice] = useState<ShopBookPrice[]>();
     const [allBookPrice, setAllBookPrice] = useState<BookPrice[]>();
+    const [bookReviews, setbookReviews] = useState<BookReview[]>();
     const [uBook, setUBook] = useState<UserBook>();
     const [bookHasStatus, setBookHasStatus] = useState(false);
     const gbId = useParams<{ id: string }>();
     const navigate = useNavigate(); //
     const isLogin = useSelector((state: RootState) => state.auth.isLogin);
     const [show, setShow] = useState(false);
+    const [showUserReview, setShowUserReview] = useState(false);
+    const [showUsersReview, setShowUsersReview] = useState(false);
+    const [reviewContent, setReviewContent] = useState("");
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    const handleCloseUsersReview = () => setShowUsersReview(false);
+    const handleShowUsersReview = () => setShowUsersReview(true);
+    const handleCloseUserReview = () => setShowUserReview(false);
+    const handleShowUserReview = () => setShowUserReview(true);
+    const reviewContentChange = (e) => setReviewContent(e.target.value);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -44,10 +62,18 @@ function BookPage() {
                         const bookData: UserBook = await getUserBook(gbId.id);
                         console.log(bookData);
                         setUBook(bookData);
+                        if (bookData.review != undefined) {
+                            setReviewContent(bookData.review)
+                        }
                         console.log(uBook?.book);
                         console.log(uBook?.status);
                     }
                 }
+
+                const bookReviews = await getAllBookReviews(gbId.id);
+                console.log(bookReviews)
+                if (bookReviews != null)
+                    setbookReviews(bookReviews);
 
                 getGBook(gbId.id).then((data) => {
                     console.log(gbId.id);
@@ -167,6 +193,13 @@ function BookPage() {
                         <Card.Footer>
                         </Card.Footer>
                     </Card>
+                    <Stack>
+                        {bookHasStatus ? (
+                                <Button style={{width: '15rem', marginTop: '10px'}} onClick={handleShowUserReview}>Ваша рецензия</Button>)
+                            : <></>}
+                        <Button style={{width: '15rem', marginTop: '10px'}} onClick={handleShowUsersReview}>Рецензии</Button>
+                    </Stack>
+
                 </div>
             </Stack>
 
@@ -205,10 +238,10 @@ function BookPage() {
                                                     <td className='book-price__item'>
                                                         <Button
                                                         variant="primary"
-                                                        disabled={!bookInfo.url} // Отключаем кнопку, если URL отсутствует
+                                                        disabled={!bookInfo.url}
                                                         onClick={() => {
                                                             if (bookInfo.url) {
-                                                                window.open(bookInfo.url, '_blank'); // Открываем ссылку в новой вкладке
+                                                                window.open(bookInfo.url, '_blank');
                                                             }
                                                         }}>
                                                         Купить
@@ -226,6 +259,84 @@ function BookPage() {
 
                 <Modal.Footer>
                     <Button variant="outline-primary" onClick={handleClose}>Закрыть</Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showUserReview}
+                   size={"lg"}
+                   centered={true}
+                   onHide={() => {
+                       handleCloseUserReview();
+                       if (uBook?.review != undefined) {
+                           setReviewContent(uBook?.review)
+                       }
+                   }}
+                // fullscreen={true}
+                   aria-labelledby="example-custom-modal-styling-title">
+                <Modal.Header closeButton>
+                    <Modal.Title>Составить рецензию</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body className="modal-dialog-scrollable">
+                    <Container style={{height: '30rem', overflowY: 'auto'}}>
+                        <Form>
+                            <Form.Label><h5>Текст рецензии</h5></Form.Label>
+                            <Form.Control style={{height: '25rem', resize: 'none'}} as="textarea" rows={3} placeholder="Ваша рецензия" onChange={reviewContentChange}
+                                          defaultValue={`${reviewContent}`}
+                            />
+                        </Form>
+                    </Container>
+                </Modal.Body>
+
+                <Modal.Footer>
+                    <Button variant="outline-danger" onClick={() => {
+                        deleteBookReview(gbId.id, reviewContent).then(() => handleCloseUserReview())
+                    }}>Удалить</Button>
+                    <Button variant="outline-primary" onClick={() => {
+                        updateBookReview(gbId.id, reviewContent).then(() => handleCloseUserReview())
+                    }}>Сохранить</Button>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal show={showUsersReview}
+                   // size={"lg"}
+                   centered={true}
+                   onHide={() => {
+                       handleCloseUsersReview();
+                   }}
+                   dialogClassName="modal-user-reviews"
+                   aria-labelledby="example-custom-modal-styling-title">
+                <Modal.Header style={{border: 'none', paddingBottom: '0px'}} closeButton>
+                    <Modal.Title>Рецензии пользователей</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body className="modal-dialog-scrollable" style={{maxHeight:'30rem', overflowY: 'auto'}}>
+                    {bookReviews ? (
+                        <>
+                            <Stack style={{maxWidth: '50rem', display: 'flex', justifyContent: 'start', justifySelf: 'start'}}>
+                                {
+                                    bookReviews.map((bookReview: BookReview) => (
+                                        <Container style={{ width: '30rem', maxHeight: '20rem'}} className='review'>
+                                            <Container className='review-header'>
+                                                <div>{bookReview.username}</div>
+                                                {bookReview.userRating != undefined &&
+                                                    <div className={getScoreClass(bookReview.userRating)}>{bookReview.userRating}</div>}
+                                            </Container>
+                                            <Container className='review-text'>
+                                                {bookReview.review}
+                                            </Container>
+                                        </Container>
+                                    ))
+                                }
+                            </Stack>
+                        </>
+                    ): <></>}
+                </Modal.Body>
+
+                <Modal.Footer style={{border: 'none'}}>
+                    <Button variant="outline-primary" onClick={() => {
+                        handleCloseUsersReview()
+                    }}>Закрыть</Button>
                 </Modal.Footer>
             </Modal>
         </BookProvider>

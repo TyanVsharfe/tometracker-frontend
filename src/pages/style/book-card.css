@@ -19,6 +19,9 @@
 }
 
 .book__description {
+    display: flex;
+    max-height: 25rem;
+    overflow: auto;
 }
 
 .book__cover {

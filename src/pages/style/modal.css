@@ -1,0 +1,49 @@
+.modal-content {
+    width: 40rem;
+}
+.modal-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.review {
+    border-bottom: 1px solid #ddd;
+    padding: 12px 0;
+}
+
+.review:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.review-score {
+    color: white;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.review-score.high {
+    background: #2d8b3a; /* Зеленый */
+}
+
+.review-score.medium {
+    background: #d1a517; /* Желтый */
+}
+
+.review-score.low {
+    background: #d14836; /* Красный */
+}
+
+.review-text {
+    margin-top: 5px;
+}
+

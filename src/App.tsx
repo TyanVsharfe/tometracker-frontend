@@ -12,6 +12,7 @@ import {useEffect, useState} from "react";
 import {useSelector, useDispatch} from "react-redux";
 import {RootState} from "./store/store.ts";
 import {verifySession} from "./store/authSlice.ts";
+import UserInfoPage from "./pages/Books/UserInfoPage.tsx";
 
 function App() {
     const dispatch = useDispatch();
@@ -55,7 +56,8 @@ function App() {
             {/*<Route path="/" element={<HomePage />} />*/}
             <Route path="/login" element={<LoginPage/>} />
             <Route path="/registration" element={<RegisterPage/>} />
-            <Route path="account/books" element={<UserBooksPage />} />
+            <Route path="/account" element={<UserInfoPage />} />
+            <Route path="/account/books" element={<UserBooksPage />} />
             <Route path="/books/:id" element={<BookPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="*" element={<NotFoundPage />} />

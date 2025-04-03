@@ -8,6 +8,7 @@ export interface UserBook {
     book: Book;
     status: string;
     userRating: number;
+    review: string
     notes: Note[];
 }
 
@@ -18,12 +19,29 @@ export interface Book {
     title: string;
 }
 
+export interface BookReview {
+    id: number;
+    username: string;
+    review: string;
+    userRating: number;
+}
+
 export const getBooks = async (status: string) => {
     const headers = {withCredentials: true};
 
     const response = await axios.get(`${BASE_URL}/books/all?status=${status}`, headers);
 
-    apiRequest(response)
+    await apiRequest(response)
+
+    return response.data;
+};
+
+export const getAllBookReviews = async (gbId: string | undefined) => {
+    const headers = {withCredentials: true};
+
+    const response = await axios.get(`${BASE_URL}/books/${gbId}/reviews`, headers);
+
+    await apiRequest(response)
 
     return response.data;
 };
@@ -33,7 +51,7 @@ export const getUserBook = async (gbId: string | undefined) => {
 
     const response = await axios.get(`${BASE_URL}/books/${gbId}`, headers);
 
-    apiRequest(response)
+    await apiRequest(response)
 
     console.log(response.data);
     return response.data;
@@ -44,7 +62,7 @@ export const deleteUserBook = async (gbId: string | undefined) => {
 
     const response = await axios.delete(`${BASE_URL}/books/${gbId}`, headers);
 
-    apiRequest(response)
+    await apiRequest(response)
 
     console.log(response.data);
     return response.data;
@@ -55,7 +73,7 @@ export const addUserBook = async (gbId: string | undefined) => {
 
     const response = await axios.post(`${BASE_URL}/books/${gbId}`, {}, headers);
 
-    apiRequest(response)
+    await apiRequest(response)
 
     console.log(response.data);
     return response.data;
@@ -75,7 +93,7 @@ export const updateBookStatus = async (gbId: string | undefined, status: number)
 
     const response = await axios.put(`${BASE_URL}/books/${gbId}`, query, headers);
 
-    apiRequest(response)
+    await apiRequest(response)
 
     return response.data;
 };
@@ -94,9 +112,43 @@ export const updateBookRating = async (gbId: string | undefined, rating: number)
 
     const response = await axios.put(`${BASE_URL}/books/${gbId}`, query, headers);
 
-    apiRequest(response)
+    await apiRequest(response)
 
     return rating;
+};
+
+export const updateBookReview = async (gbId: string | undefined, review: string) => {
+    const query = {
+        "review": review,
+    };
+
+    const headers = { headers: {
+            'Content-Type': 'application/json'
+        },
+        withCredentials: true};
+
+    const response = await axios.put(`${BASE_URL}/books/${gbId}`, query, headers);
+
+    await apiRequest(response)
+
+    return review;
+};
+
+export const deleteBookReview = async (gbId: string | undefined, review: string) => {
+    const query = {
+        "review": "",
+    };
+
+    const headers = { headers: {
+            'Content-Type': 'application/json'
+        },
+        withCredentials: true};
+
+    const response = await axios.put(`${BASE_URL}/books/${gbId}`, query, headers);
+
+    await apiRequest(response)
+
+    return review;
 };
 
 export const checkEntity = async (gbId: string | undefined) => {
