@@ -8,7 +8,7 @@ export interface UserBook {
     book: Book;
     status: string;
     userRating: number;
-    review: string
+    review: string;
     notes: Note[];
 }
 
@@ -24,6 +24,10 @@ export interface BookReview {
     username: string;
     review: string;
     userRating: number;
+}
+
+export interface ReviewProps {
+    bookReview: BookReview;
 }
 
 export const getBooks = async (status: string) => {
@@ -86,10 +90,12 @@ export const updateBookStatus = async (gbId: string | undefined, status: number)
 
     console.log(query);
 
-    const headers = { headers: {
+    const headers = {
+        headers: {
             'Content-Type': 'application/json'
         },
-        withCredentials: true};
+        withCredentials: true
+    };
 
     const response = await axios.put(`${BASE_URL}/books/${gbId}`, query, headers);
 
@@ -105,10 +111,12 @@ export const updateBookRating = async (gbId: string | undefined, rating: number)
 
     console.log(query);
 
-    const headers = { headers: {
+    const headers = {
+        headers: {
             'Content-Type': 'application/json'
         },
-        withCredentials: true};
+        withCredentials: true
+    };
 
     const response = await axios.put(`${BASE_URL}/books/${gbId}`, query, headers);
 
@@ -122,10 +130,12 @@ export const updateBookReview = async (gbId: string | undefined, review: string)
         "review": review,
     };
 
-    const headers = { headers: {
+    const headers = {
+        headers: {
             'Content-Type': 'application/json'
         },
-        withCredentials: true};
+        withCredentials: true
+    };
 
     const response = await axios.put(`${BASE_URL}/books/${gbId}`, query, headers);
 
@@ -139,10 +149,12 @@ export const deleteBookReview = async (gbId: string | undefined, review: string)
         "review": "",
     };
 
-    const headers = { headers: {
+    const headers = {
+        headers: {
             'Content-Type': 'application/json'
         },
-        withCredentials: true};
+        withCredentials: true
+    };
 
     const response = await axios.put(`${BASE_URL}/books/${gbId}`, query, headers);
 

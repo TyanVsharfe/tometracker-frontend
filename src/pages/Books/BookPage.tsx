@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
-import {Button, ListGroup, ListGroupItem, Stack, Table} from "react-bootstrap";
-import {Link, useNavigate, useParams, useSearchParams} from "react-router-dom";
-import {addBook, Book, gBook, getGBook} from "../../services/bookService.ts";
+import {Button, Stack, Table} from "react-bootstrap";
+import {useNavigate, useParams} from "react-router-dom";
+import {addBook, gBook, getGBook} from "../../services/bookService.ts";
 import BookControls from "../../components/BookControls.tsx";
-import {formatDate, getScoreClass} from "../../utils/Utils.ts";
+import {formatDate} from "../../utils/Utils.ts";
 import BookInfo from "../../components/BookInfo.tsx";
 import {BookProvider} from "../../components/BookProvider.tsx";
 import Form from "react-bootstrap/Form";
@@ -25,6 +25,7 @@ import {useSelector} from "react-redux";
 import {RootState} from "../../store/store.ts";
 import Modal from "react-bootstrap/Modal";
 import Title from "../../components/Title.tsx";
+import Review from "../../components/Review.tsx";
 
 function BookPage() {
     const [book, setBook] = useState<gBook>();
@@ -273,12 +274,12 @@ function BookPage() {
                    }}
                 // fullscreen={true}
                    aria-labelledby="example-custom-modal-styling-title">
-                <Modal.Header closeButton>
+                <Modal.Header style={{border: 'none', paddingBottom: '0px'}} closeButton>
                     <Modal.Title>Составить рецензию</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body className="modal-dialog-scrollable">
-                    <Container style={{height: '30rem', overflowY: 'auto'}}>
+                    <Container style={{maxHeight: '30rem', overflowY: 'auto'}}>
                         <Form>
                             <Form.Label><h5>Текст рецензии</h5></Form.Label>
                             <Form.Control style={{height: '25rem', resize: 'none'}} as="textarea" rows={3} placeholder="Ваша рецензия" onChange={reviewContentChange}
@@ -288,7 +289,7 @@ function BookPage() {
                     </Container>
                 </Modal.Body>
 
-                <Modal.Footer>
+                <Modal.Footer style={{border: 'none'}}>
                     <Button variant="outline-danger" onClick={() => {
                         deleteBookReview(gbId.id, reviewContent).then(() => handleCloseUserReview())
                     }}>Удалить</Button>
@@ -316,16 +317,7 @@ function BookPage() {
                             <Stack style={{maxWidth: '50rem', display: 'flex', justifyContent: 'start', justifySelf: 'start'}}>
                                 {
                                     bookReviews.map((bookReview: BookReview) => (
-                                        <Container style={{ width: '30rem', maxHeight: '20rem'}} className='review'>
-                                            <Container className='review-header'>
-                                                <div>{bookReview.username}</div>
-                                                {bookReview.userRating != undefined &&
-                                                    <div className={getScoreClass(bookReview.userRating)}>{bookReview.userRating}</div>}
-                                            </Container>
-                                            <Container className='review-text'>
-                                                {bookReview.review}
-                                            </Container>
-                                        </Container>
+                                        <Review bookReview={bookReview}/>
                                     ))
                                 }
                             </Stack>
