@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Container from "react-bootstrap/Container";
 import {Alert, Stack} from "react-bootstrap";
-import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -26,7 +25,6 @@ function UserBooksPage() {
     const handleUserBooks = () => {
         try {
             getBooks(filterStatus).then(results => {
-                //localStorage.setItem('book_list', JSON.stringify(results));
                 console.log(results);
                 setUserBooks(results)
             });
@@ -40,16 +38,6 @@ function UserBooksPage() {
     const renderUserBooks = () => {
         const booksResults = userBooks;
 
-        // const gameList = localStorage.getItem('game_list');
-        //
-        // if (gameList === null) {
-        //     console.log('localStorage is empty');
-        // } else {
-        //     // localStorage не пуст, удаляем game_list
-        //     localStorage.removeItem('game_list');
-        //     console.log('game_list removed');
-        // }
-
         console.log("Ниже вывод " + JSON.stringify(booksResults));
         console.log("Это массив? " + Array.isArray(booksResults));
 
@@ -58,7 +46,7 @@ function UserBooksPage() {
                 <Container className="justify-content-start align-items-center books-list">
                     {
                         booksResults.map((book: Book, index: number) => (
-                            <Col key={index} style={{paddingBottom: '20px', flex: '0 1 calc(20% - 10px)'}}>
+                            <Col key={index} style={{paddingBottom: '20px', flex: '0 1 calc(20%)', width: '9rem'}}>
                                 <Card data-bs-theme='dark' style={{ width: '9rem'}}  className='text-center' border='light'>
                                     <Card.Img className='book__cover' variant="top" src={book?.coverUrl || ''}/>
                                     <Card.Body className='book__body'>
@@ -69,9 +57,6 @@ function UserBooksPage() {
                                         </Container>
                                         <Card.Text>
                                             <Container>
-                                                {/*{book.platforms && (*/}
-                                                {/*    book.platforms.map((platform) => `${platform.abbreviation?.replace(' ', '-') || ''} `)*/}
-                                                {/*)}*/}
                                             </Container>
                                         </Card.Text>
                                         <Button style={{ width: '90%', fontSize: '12px'}} variant='primary' href={`/books/${book.gbId}`}>Подробнее</Button>
@@ -131,9 +116,6 @@ function UserBooksPage() {
                     </Stack>
                 </Stack>
                 <br/>
-                {/*<Container className="justify-content-center align-items-center games-list">*/}
-                {/*    <UserGames userGames={userGames}/>*/}
-                {/*</Container>*/}
                 {renderUserBooks()}
             </Container>
         </Container>

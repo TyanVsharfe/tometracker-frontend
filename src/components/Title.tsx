@@ -8,7 +8,7 @@ interface TitleProps {
 }
 
 const Title: React.FC<TitleProps> = ({ title }) => {
-    const truncatedTitle = title.length > 30 ? `${title.slice(0, 30)}...` : title;
+    const truncatedTitle = title.length > 60 ? `${title.slice(0, 60)}...` : title;
 
     return (
         <OverlayTrigger
@@ -16,7 +16,7 @@ const Title: React.FC<TitleProps> = ({ title }) => {
             overlay={<Tooltip id="tooltip-title">{title}</Tooltip>}
         >
             <Button variant="light" style={{ paddingLeft: "0px", background: 'none' }}>
-                <span className="ms-1">{truncatedTitle}</span>
+                <span style={{display: 'flex', textAlign: 'start'}} className="ms-1">{truncatedTitle}</span>
             </Button>
         </OverlayTrigger>
     );

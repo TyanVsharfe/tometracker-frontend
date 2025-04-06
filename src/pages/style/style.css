@@ -29,13 +29,6 @@
     padding: 15px 0;
 }
 
-.books-list {
-    display: flex;
-    flex-wrap: wrap;
-    width: 65rem;
-    justify-content: space-around;
-}
-
 @media (max-width: 768px) {
     .books-list {
         display: grid;

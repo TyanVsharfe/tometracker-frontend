@@ -9,9 +9,12 @@ const statusTranslations: { [key in keyof typeof enumStatus]: string } = {
     Completed: "Прочитано",
     Playing: "Читаю",
     Planned: "В планах",
-    Abandoned: "Заброшено"
+    Abandoned: "Заброшено",
 };
 
 export const getStatusTranslation = (status: string | undefined): string => {
-    return statusTranslations[status];
+    if (status && status in statusTranslations) {
+        return statusTranslations[status as keyof typeof enumStatus];
+    }
+    return "Отсутствует";
 };

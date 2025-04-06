@@ -30,10 +30,31 @@ export interface ReviewProps {
     bookReview: BookReview;
 }
 
+export interface UserInfo {
+    username: string;
+    allBookQuantity: number;
+    userBookQuantity: UserBookCountInfo[];
+}
+
+export interface UserBookCountInfo {
+    category: string;
+    bookQuantity: number;
+}
+
 export const getBooks = async (status: string) => {
     const headers = {withCredentials: true};
 
     const response = await axios.get(`${BASE_URL}/books/all?status=${status}`, headers);
+
+    await apiRequest(response)
+
+    return response.data;
+};
+
+export const getAllBooksInfo = async () => {
+    const headers = {withCredentials: true};
+
+    const response = await axios.get(`${BASE_URL}/info`, headers);
 
     await apiRequest(response)
 

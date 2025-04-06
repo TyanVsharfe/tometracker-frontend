@@ -6,6 +6,7 @@ import {loginUser, User} from "../../services/authService.ts";
 import {useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {verifySession} from "../../store/authSlice.ts";
+import {Stack} from "react-bootstrap";
 
 const LoginPage: React.FC = () => {
     const [login, setLogin] = useState('');
@@ -15,12 +16,15 @@ const LoginPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const user: User = {username: login, password: password};
-        await loginUser(user)
-        navigate('/account/books')
+
+        const formData = new FormData(e.currentTarget);
+
+        for (let [key, value] of formData.entries()) {
+            console.log(key, value);
+        }
 
         try {
-            await loginUser(user);
+            await loginUser(formData);
             dispatch(verifySession() as any);
             navigate('/account/books');
         } catch (error) {
@@ -35,13 +39,19 @@ const LoginPage: React.FC = () => {
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicLogin">
                     <Form.Label>Логин</Form.Label>
-                    <Form.Control type="text" placeholder="Login"
+                    <Form.Control type="text"
+                                  name="username"
+                                  placeholder="Login"
+                                  value={login}
                                   onChange={(e) => setLogin(e.target.value)}/>
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label>Пароль</Form.Label>
-                    <Form.Control type="password" placeholder="Password"
+                    <Form.Control type="password"
+                                  name="password"
+                                  placeholder="Password"
+                                  value={password}
                                   onChange={(e) => setPassword(e.target.value)}/>
                     <Form.Text className="text-muted">
                         <br/>
@@ -50,9 +60,12 @@ const LoginPage: React.FC = () => {
                     </Form.Text>
                 </Form.Group>
 
-                <Button variant="primary" type="submit">
-                    Войти
-                </Button>
+                <Stack direction='horizontal' style={{'justifyContent': 'space-between'}}>
+                    <Button variant="primary" type="submit">
+                        Войти
+                    </Button>
+                    <Form.Check type="checkbox" name="remember-me" label="Запомнить меня" />
+                </Stack>
             </Form>
         </Container>
     );

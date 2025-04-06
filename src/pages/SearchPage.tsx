@@ -35,7 +35,7 @@ function SearchPage() {
         console.log(gBooks);
         if (Array.isArray(gBooks)) {
             return gBooks.map((book: gBook, index: number) => (
-                <Col key={index} style={{ paddingBottom: '20px' }} xxl={3} xl={3} lg={3} sm={3} xs={3}>
+                <Col key={index} style={{paddingBottom: '20px', flex: '0 1 calc(20%)'}}>
                     <Card data-bs-theme='dark' style={{ width: '9rem' }} className='text-center' border='light'>
                         <Card.Img className='book__cover' variant='top' src={book.volumeInfo.imageLinks?.thumbnail} />
                         <Card.Body className='book__body'>
@@ -60,9 +60,9 @@ function SearchPage() {
         <Container>
             <Stack className=".d-flex justify-content-center align-items-center">
                 <h2 className='page-title'>Результаты</h2>
-                <Row className="flex-wrap" style={{ display: 'flex', alignItems: 'flex-end' }} gap="4">
+                <Container className="justify-content-start align-items-center books-list">
                     {renderSearchResults()}
-                </Row>
+                </Container>
             </Stack>
         </Container>
     );

@@ -4,6 +4,13 @@
     align-items: start;
 }
 
+.books-list {
+    display: flex;
+    flex-wrap: wrap;
+    width: 65rem;
+    justify-content: space-around;
+}
+
 .book__title {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -16,6 +23,11 @@
 
 .book-price__item {
     vertical-align: middle;
+}
+
+.book-price__item-title {
+    display: flex;
+    text-align: start;
 }
 
 .book__description {

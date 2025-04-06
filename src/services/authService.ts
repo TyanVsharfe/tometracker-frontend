@@ -19,18 +19,11 @@ export const logoutUser = async () => {
     return response.data;
 };
 
-export const loginUser = async (user: UserLogin | undefined) => {
-    const query = {
-        "username": user?.username,
-        "password": user?.password,
-    };
+export const loginUser = async (formData: FormData) => {
+    const headers = {withCredentials: true};
 
-    const headers = { headers: {
-            'Content-Type': 'application/json'
-        },
-        withCredentials: true};
-
-    const response = await axios.post(`${BASE_URL}/users/login`, query, headers);
+    const response = await axios.post(`${BASE_URL}/users/login`, formData, headers);
+    console.log(response);
     return response.data;
 };
 
