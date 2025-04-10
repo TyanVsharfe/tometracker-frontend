@@ -87,7 +87,7 @@ function UserBooksPage() {
 
             <Container>
                 <Stack className=".d-flex justify-content-center align-items-center">
-                    <h1 className='page-title'>Мои книги</h1>
+                    <h1>Мои книги</h1>
                     <Stack direction="horizontal" className=".d-flex justify-content-md-center align-items-center" gap={4}>
                         <Button variant="outline-primary" disabled={activeFilterButtonIndex === 0} onClick={() => {
                             setActiveFilterButton(0)

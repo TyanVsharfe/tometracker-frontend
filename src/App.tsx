@@ -3,16 +3,17 @@ import {Route, Routes, useLocation, useNavigate} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navigation from "./components/Navbar.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
-import SearchPage from "./pages/SearchPage.tsx";
+import SearchPage from "./pages/Books/SearchPage.tsx";
 import BookPage from "./pages/Books/BookPage.tsx";
-import UserBooksPage from "./pages/Books/UserBooksPage.tsx";
+import UserBooksPage from "./pages/User/UserBooksPage.tsx";
 import LoginPage from "./pages/Auth/LoginPage.tsx";
 import RegisterPage from "./pages/Auth/RegisterPage.tsx";
 import {useEffect, useState} from "react";
 import {useSelector, useDispatch} from "react-redux";
 import {RootState} from "./store/store.ts";
 import {verifySession} from "./store/authSlice.ts";
-import UserInfoPage from "./pages/Books/UserInfoPage.tsx";
+import UserInfoPage from "./pages/User/UserInfoPage.tsx";
+import UserSettingsPage from "./pages/User/UserSettingsPage.tsx";
 
 function App() {
     const dispatch = useDispatch();
@@ -57,6 +58,7 @@ function App() {
             <Route path="/login" element={<LoginPage/>} />
             <Route path="/registration" element={<RegisterPage/>} />
             <Route path="/account" element={<UserInfoPage />} />
+            <Route path="/account/settings" element={<UserSettingsPage />} />
             <Route path="/account/books" element={<UserBooksPage />} />
             <Route path="/books/:id" element={<BookPage />} />
             <Route path="/search" element={<SearchPage />} />

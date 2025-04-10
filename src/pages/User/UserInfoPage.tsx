@@ -24,10 +24,13 @@ function UserInfoPage() {
             <AccountNav/>
 
             <Container>
-                <Stack className=".d-flex justify-content-center align-items-center">
-                    <h1 className='page-title'>Информация</h1>
-                    <h2>Имя пользователя</h2>
-                    <h3>{userInfo?.username}</h3>
+                <Stack className=".d-flex justify-content-center align-items-center" style={{marginBottom: "40px"}}>
+                    {/*<h1 style={{fontSize: "32px", marginBottom: "10px"}}>Информация</h1>*/}
+                    <p style={{fontSize: "20px", marginBottom: "5px"}}><strong>Имя пользователя:</strong></p>
+                    <p style={{fontSize: "24px"}}>{userInfo?.username}</p>
+
+                    <p style={{fontSize: "20px", marginBottom: "5px"}}><strong>Тип подписки:</strong></p>
+                    <p style={{fontSize: "24px"}}>{userInfo?.subscription}</p>
                 </Stack>
                 {/*<Stack>*/}
                 {/*    {userInfo?.userBookQuantity.map((book) => (*/}

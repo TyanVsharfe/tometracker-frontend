@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import {Button, Stack, Table} from "react-bootstrap";
@@ -42,6 +42,10 @@ function BookPage() {
     const [showUsersReview, setShowUsersReview] = useState(false);
     const [reviewContent, setReviewContent] = useState("");
 
+    const [expanded, setExpanded] = useState(false);
+    const [isOverflowing, setIsOverflowing] = useState(false);
+    const descriptionTextRef = useRef<HTMLDivElement>(null);
+
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const handleCloseUsersReview = () => setShowUsersReview(false);
@@ -83,6 +87,10 @@ function BookPage() {
                     const keyStorage = `/books/${gbId}`;
                     localStorage.setItem(keyStorage, JSON.stringify(data));
                     setBook(data);
+                    if (descriptionTextRef.current) {
+                        const isTextOverflowing = descriptionTextRef.current.scrollHeight > descriptionTextRef.current.clientHeight;
+                        setIsOverflowing(isTextOverflowing);
+                    }
                     //console.log(data?.volumeInfo?.industryIdentifiers);
                     findBookPrices(data?.volumeInfo?.title, data?.volumeInfo?.authors[0]).then((bookPrices) => {
                         console.log(bookPrices);
@@ -146,7 +154,12 @@ function BookPage() {
                     <div style={{maxWidth: '500px'}}>
                         {/*height: '20rem'*/}
                         <h2>Описание:</h2>
-                        <span className='book__description'>{book?.volumeInfo?.description}</span>
+                        <span className={`book__description ${expanded ? "expanded" : ""}`} ref={descriptionTextRef}>{book?.volumeInfo?.description}</span>
+                        {isOverflowing && (
+                            <button className='book__description-button' onClick={() => setExpanded(!expanded)}>
+                                {expanded ? "Скрыть" : "Читать далее"}
+                            </button>
+                        )}
                     </div>
                     <Container style={{display: 'flex', flexDirection: 'column', padding: '0px 0px 0px 0px'}}>
                         {bookPrice != undefined ? (

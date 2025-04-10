@@ -21,6 +21,43 @@
     font-size: 14px;
 }
 
+.book__description {
+    display: flex;
+    max-height: 25rem;
+
+    margin-top: 5px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 15;
+    -webkit-box-orient: vertical;
+    position: relative;
+}
+
+.book__description::after {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: white;
+    padding-left: 5px;
+}
+
+.book__description.expanded {
+    max-height: none;
+    -webkit-line-clamp: unset;
+}
+
+.book__description.expanded::after {
+    display: none;
+}
+
+.book__description-button {
+    padding: 4px 10px 5px;
+    font-size: 12px;
+    background: none;
+    border: none;
+    display: block;
+}
+
 .book-price__item {
     vertical-align: middle;
 }
@@ -28,12 +65,6 @@
 .book-price__item-title {
     display: flex;
     text-align: start;
-}
-
-.book__description {
-    display: flex;
-    max-height: 25rem;
-    overflow: auto;
 }
 
 .book__cover {

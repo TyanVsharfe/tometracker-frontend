@@ -44,8 +44,8 @@ export interface BookUpdate {
     notes: Note[];
 }
 
-export const searchBooks = async (searchQuery : string) => {
-    const response = await axios.post(`${BASE_URL}/gbooks`, searchQuery);
+export const searchBooks = async (filter: string,searchQuery : string) => {
+    const response = await axios.get(`${BASE_URL}/gbooks?q=${searchQuery}&filter=${filter}`);
     return response.data;
 };
 

@@ -32,6 +32,7 @@ export interface ReviewProps {
 
 export interface UserInfo {
     username: string;
+    subscription: string;
     allBookQuantity: number;
     userBookQuantity: UserBookCountInfo[];
 }
