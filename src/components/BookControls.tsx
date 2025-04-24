@@ -65,7 +65,7 @@ function BookControls() {
                         {/*<Form.Label>Graphics: {graphicsRating}</Form.Label>*/}
                         {/*<Form.Range value={graphicsRating} max={10} onChange={graphicsSliderChange}/>*/}
 
-                        <Form.Label>История: {storyRating}</Form.Label>
+                        <Form.Label>Оценка: {storyRating}</Form.Label>
                         <Form.Range value={storyRating} max={10} onChange={storySliderChange}/>
 
                         {/*<Form.Label>Gameplay: {gameplayRating}</Form.Label>*/}

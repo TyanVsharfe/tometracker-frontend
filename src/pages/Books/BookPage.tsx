@@ -202,7 +202,11 @@ function BookPage() {
                         <Card.Body>
                             Автор: {book?.volumeInfo?.authors[0]}<br/>
                             Количество страниц: {book?.volumeInfo?.pageCount}<br/>
-                            Издатель: {book?.volumeInfo?.publisher}
+                            Издатель: {book?.volumeInfo?.publisher}<br/>
+                            Жанр:
+                            {book?.volumeInfo?.categories?.map((category, index) => (
+                                <div className="book-info-genre" key={index}>{category}</div>
+                            ))}
                         </Card.Body>
                         <Card.Footer>
                         </Card.Footer>
@@ -277,7 +281,7 @@ function BookPage() {
             </Modal>
 
             <Modal show={showUserReview}
-                   size={"lg"}
+                   //size={"lg"}
                    centered={true}
                    onHide={() => {
                        handleCloseUserReview();

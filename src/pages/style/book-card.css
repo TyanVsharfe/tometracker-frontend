@@ -93,6 +93,10 @@
     font-size: 14px;
 }
 
+.book-info-genre {
+    font-size: 14px;
+}
+
 @media (max-width: 1000px) {
     .book-page {
         display: flex;

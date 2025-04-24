@@ -55,7 +55,9 @@ const LoginPage: React.FC = () => {
                                   onChange={(e) => setPassword(e.target.value)}/>
                     <Form.Text className="text-muted">
                         <br/>
-                        <p>Нет аккаунта? <a href="/registration">Зарегистрируйтесь</a></p>
+                        <p style={{display: 'flex', justifyContent: 'space-between'}}>
+                            Нет аккаунта? <a href="/registration">Зарегистрируйтесь</a>
+                        </p>
                         <p><a href="/forgot-password">Забыли пароль?</a></p>
                     </Form.Text>
                 </Form.Group>

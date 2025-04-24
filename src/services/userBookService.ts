@@ -17,6 +17,8 @@ export interface Book {
     gbId: string;
     isbn13: string;
     title: string;
+    description: string;
+    genres: string[];
 }
 
 export interface BookReview {
@@ -56,6 +58,16 @@ export const getAllBooksInfo = async () => {
     const headers = {withCredentials: true};
 
     const response = await axios.get(`${BASE_URL}/info`, headers);
+
+    await apiRequest(response)
+
+    return response.data;
+};
+
+export const getAllBooksGenres = async () => {
+    const headers = {withCredentials: true};
+
+    const response = await axios.get(`${BASE_URL}/books/all-genres`, headers);
 
     await apiRequest(response)
 

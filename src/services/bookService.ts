@@ -16,6 +16,7 @@ export interface gBook {
             large?: string;
             extraLarge?: string;
         };
+        categories?: string[];
         description?: string;
         pageCount?: number;
         publishedDate?: string;
@@ -25,16 +26,6 @@ export interface gBook {
             type: string
         }[];
     };
-}
-
-export interface Book {
-    gbId: string;
-    isbn13: string;
-    title: string;
-    status: string;
-    userRating: number;
-    coverUrl: string;
-    notes: Note[];
 }
 
 export interface BookUpdate {
@@ -56,8 +47,8 @@ export const deleteBook = async (gbId: string | undefined) => {
 };
 
 export const getGBook = async (gbId: string | undefined) => {
-    //const response = await axios.get(`${BASE_URL}/gbooks/${gbId}`);
-    const response = await axios.get(`${BASE_URL}/gbooks/v2/${gbId}`);
+    const response = await axios.get(`${BASE_URL}/gbooks/${gbId}`);
+    //const response = await axios.get(`${BASE_URL}/gbooks/v2/${gbId}`);
     return response.data;
 };
 
@@ -72,7 +63,9 @@ export const addBook = async (book: gBook | undefined) => {
         "gbId": book?.id,
         "isbn13": Number(identifier),
         "title": book?.volumeInfo?.title,
-        "coverUrl": book?.volumeInfo?.imageLinks?.thumbnail
+        "coverUrl": book?.volumeInfo?.imageLinks?.thumbnail,
+        "description": book?.volumeInfo?.description,
+        "genres": book?.volumeInfo?.categories
     };
 
     console.log(query);

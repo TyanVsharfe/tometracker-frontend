@@ -26,7 +26,6 @@ function App() {
 
     useEffect(() => {
         const checkAuth = async () => {
-            // Получаем результат проверки сессии напрямую
             const isAuthenticated = await dispatch(verifySession() as any).unwrap();
 
             const requiresAuthPaths = ['/account/books'];
