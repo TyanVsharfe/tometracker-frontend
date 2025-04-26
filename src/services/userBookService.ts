@@ -18,7 +18,11 @@ export interface Book {
     isbn13: string;
     title: string;
     description: string;
+    pageCount: number;
+    publisher: string;
+    publishedDate: string;
     genres: string[];
+    authors: string[];
 }
 
 export interface BookReview {
@@ -37,11 +41,17 @@ export interface UserInfo {
     subscription: string;
     allBookQuantity: number;
     userBookQuantity: UserBookCountInfo[];
+    bookCountByGenre: GenreCountInfo[];
 }
 
 export interface UserBookCountInfo {
     category: string;
-    bookQuantity: number;
+    count: number;
+}
+
+export interface GenreCountInfo {
+    genre: string;
+    count: number;
 }
 
 export const getBooks = async (status: string) => {

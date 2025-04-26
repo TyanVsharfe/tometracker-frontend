@@ -10,9 +10,10 @@ import Button from "react-bootstrap/Button";
 
 import "../style/book-card.css"
 import Form from "react-bootstrap/Form";
+import Modal from "react-bootstrap/Modal";
+import {enumGenres, enumSaveGenres} from "../../utils/Enums.ts";
 
 function SearchPage() {
-    //const [isLoading, setIsLoading] = useState(false);
     const [searchParams] = useSearchParams();
     const [searchResults, setSearchResults] = useState<gBook[]>([]);
     const navigate = useNavigate();
@@ -20,6 +21,11 @@ function SearchPage() {
     const [searchTerm, setsearchTerm] = useState("");
     const [filter, setFilter] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [show, setShow] = useState(false);
+    const [selectedGenre, setSelectedGenre] = useState<string>("");
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     useEffect(() => {
         const searchQuery = searchParams.get("q");
@@ -31,7 +37,7 @@ function SearchPage() {
 
         if (searchQuery != null && searchQuery != "") {
             setIsLoading(true);
-            searchBooks(filter, searchQuery).then(results => {
+            searchBooks(filter, searchQuery, selectedGenre).then(results => {
                 //localStorage.setItem('book_list', JSON.stringify(results));
                 setSearchResults([]);
                 console.log(results);
@@ -40,6 +46,11 @@ function SearchPage() {
             });
         }
     }, [searchParams]);
+
+    const handleGenreChange = (genre: enumSaveGenres) => {
+        setSelectedGenre(genre);
+        console.log('Сохраненный жанр:', genre);
+    };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -82,10 +93,10 @@ function SearchPage() {
         <Container>
             <Stack className=".d-flex justify-content-center align-items-center">
                 <h2 className='page-title'>Результаты</h2>
-                <Container style={{textAlign: "center", width: '35rem', paddingBottom: "10px"}}>
-                    <Form className="mb-4 w-100" style={{maxWidth: "600px"}} onSubmit={handleSubmit}>
-                        <Row className="align-items-center g-2">
-                            <Col xs={4}>
+                <Container style={{ textAlign: "center", width: '35rem', paddingBottom: "10px" }}>
+                    <Form className="mb-4 w-100" style={{ maxWidth: "600px" }} onSubmit={handleSubmit}>
+                        <Row className="justify-content-center g-2">
+                            <Col xs="auto" className="mx-2">
                                 <Form.Select value={filter} onChange={(e) => setFilter(e.target.value)}>
                                     <option value="">Отсутствует</option>
                                     <option value="intitle">Название</option>
@@ -93,16 +104,23 @@ function SearchPage() {
                                     <option value="isbn">ISBN</option>
                                 </Form.Select>
                             </Col>
-                            <Col xs={6}>
+                            <Col xs="auto" className="mx-2">
+                                <Button variant="primary" onClick={handleShow}>Поиск по жанру</Button>
+                            </Col>
+                        </Row>
+
+                        <Row className="justify-content-center g-2 mt-2">
+                            <Col xs="auto" className="mx-2">
                                 <Form.Control
                                     type="text"
                                     placeholder="Введите поисковый запрос..."
                                     value={searchTerm}
                                     onChange={(e) => setsearchTerm(e.target.value)}
+                                    style={{ width: '250px' }}
                                 />
                             </Col>
-                            <Col xs={2}>
-                                <Button variant="primary" type="submit" className="w-100">
+                            <Col xs="auto" className="mx-2">
+                                <Button variant="primary" type="submit">
                                     Поиск
                                 </Button>
                             </Col>
@@ -120,6 +138,51 @@ function SearchPage() {
                 )}
                 <span style={{borderRadius: "12px"}}>Не нашли нужной книги? Попробуйте поиск по ISBN.</span>
             </Stack>
+
+            <Modal show={show}
+                // size={"lg"}
+                   centered={true}
+                   onHide={() => {
+                       handleClose();
+                   }}
+                   dialogClassName="modal-user-reviews"
+                   aria-labelledby="example-custom-modal-styling-title">
+                <Modal.Header style={{border: 'none', paddingBottom: '0px'}} closeButton>
+                    <Modal.Title>Выберите жанры</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body className="modal-dialog-scrollable" style={{maxHeight:'30rem', overflowY: 'auto'}}>
+                    <Form>
+                        {Object.values(enumGenres).map((displayGenre) => {
+                            const saveGenreKey = Object.keys(enumGenres).find(key => enumGenres[key as keyof typeof enumGenres] === displayGenre);
+                            if (saveGenreKey) {
+                                const genreValue = enumSaveGenres[saveGenreKey as keyof typeof enumSaveGenres];
+                                return (
+                                    <Form.Check
+                                        key={displayGenre}
+                                        type="radio"
+                                        id={`genre-${displayGenre}`}
+                                        name="genre"
+                                        label={displayGenre}
+                                        checked={selectedGenre === enumSaveGenres[saveGenreKey as keyof typeof enumSaveGenres]}
+                                        onChange={() => handleGenreChange(genreValue)}
+                                        className="mb-2"
+                                    />
+                                );
+                            }
+                        })}
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer style={{border: 'none'}}>
+                    <Button variant="outline-danger" onClick={() => {
+                        handleClose();
+                    }}>Отмена</Button>
+                    <Button variant="outline-primary" onClick={() => {
+                        console.log("Выбран жанр:", selectedGenre);
+                        handleClose();
+                    }}>Применить</Button>
+                </Modal.Footer>
+            </Modal>
         </Container>
     );
 }

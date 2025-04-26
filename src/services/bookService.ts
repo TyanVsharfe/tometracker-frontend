@@ -1,5 +1,6 @@
 import axios from "axios";
 import {Note} from "./noteService.ts";
+import {enumSaveGenres} from "../utils/Enums.ts";
 
 const BASE_URL = 'http://localhost:8080';
 
@@ -35,8 +36,13 @@ export interface BookUpdate {
     notes: Note[];
 }
 
-export const searchBooks = async (filter: string,searchQuery : string) => {
-    const response = await axios.get(`${BASE_URL}/gbooks?q=${searchQuery}&filter=${filter}`);
+export const searchBooks = async (filter: string, searchQuery: string, genre: string | null) => {
+    const response = await axios.get(`${BASE_URL}/gbooks?q=${searchQuery}&filter=${filter}&genre=${genre}`);
+    return response.data;
+};
+
+export const searchAuthor = async (searchQuery: string) => {
+    const response = await axios.get(`${BASE_URL}/gbooks?q=${searchQuery}&filter=inauthor`);
     return response.data;
 };
 
@@ -65,7 +71,11 @@ export const addBook = async (book: gBook | undefined) => {
         "title": book?.volumeInfo?.title,
         "coverUrl": book?.volumeInfo?.imageLinks?.thumbnail,
         "description": book?.volumeInfo?.description,
-        "genres": book?.volumeInfo?.categories
+        "genres": book?.volumeInfo?.categories,
+        "pageCount": book?.volumeInfo?.pageCount,
+        "publishedDate": book?.volumeInfo?.publishedDate,
+        "publisher": book?.volumeInfo?.publisher,
+        "authors": book?.volumeInfo?.authors
     };
 
     console.log(query);

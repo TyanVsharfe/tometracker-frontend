@@ -103,8 +103,6 @@ function UserBooksPage() {
                                             </Card.Title>
                                         </Container>
                                         <Card.Text>
-                                            <Container>
-                                            </Container>
                                         </Card.Text>
                                         <Button style={{ width: '90%', fontSize: '12px'}} variant='primary' href={`/books/${book.gbId}`}>Подробнее</Button>
                                     </Card.Body>

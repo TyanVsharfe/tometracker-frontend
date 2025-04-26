@@ -70,43 +70,91 @@ function BookPage() {
                         if (bookData.review != undefined) {
                             setReviewContent(bookData.review)
                         }
-                        console.log(uBook?.book);
-                        console.log(uBook?.status);
+                        console.log(bookData?.book.authors[0].name);
+                        console.log(bookData?.status);
+                        console.log("---------------------")
+
+                        if (descriptionTextRef.current) {
+                            const isTextOverflowing = descriptionTextRef.current.scrollHeight > descriptionTextRef.current.clientHeight;
+                            setIsOverflowing(isTextOverflowing);
+                        }
+                        findBookPrices(bookData?.book.title, bookData?.book.authors[0].name).then((bookPrices) => {
+                            console.log(bookPrices);
+                            setAllBookPrice(bookPrices);
+
+                            const shopBookPrices: ShopBookPrice[] = bookPrices.map((shopData: BookPrice) => {
+                                const book = shopData.books[0];
+                                return {
+                                    shop: shopData.shop,
+                                    book: book,
+                                };
+                            }).filter((item: ShopBookPrice) => item.book !== undefined && item.book.price !== "");
+
+                            setBookPrice(shopBookPrices);
+                        });
                     }
+                    else {
+                        getGBook(gbId.id).then((data) => {
+                            console.log(gbId.id);
+                            console.log("Book data");
+                            console.log(data);
+                            const keyStorage = `/books/${gbId}`;
+                            localStorage.setItem(keyStorage, JSON.stringify(data));
+                            setBook(data);
+                            if (descriptionTextRef.current) {
+                                const isTextOverflowing = descriptionTextRef.current.scrollHeight > descriptionTextRef.current.clientHeight;
+                                setIsOverflowing(isTextOverflowing);
+                            }
+                            findBookPrices(data?.volumeInfo?.title, data?.volumeInfo?.authors[0]).then((bookPrices) => {
+                                console.log(bookPrices);
+                                setAllBookPrice(bookPrices);
+
+                                const shopBookPrices: ShopBookPrice[] = bookPrices.map((shopData: BookPrice) => {
+                                    const book = shopData.books[0];
+                                    return {
+                                        shop: shopData.shop,
+                                        book: book,
+                                    };
+                                }).filter((item: ShopBookPrice) => item.book !== undefined && item.book.price !== "");
+
+                                setBookPrice(shopBookPrices);
+                            });
+                        });
+                    }
+                }
+                else {
+                    getGBook(gbId.id).then((data) => {
+                        console.log(gbId.id);
+                        console.log("Book data");
+                        console.log(data);
+                        const keyStorage = `/books/${gbId}`;
+                        localStorage.setItem(keyStorage, JSON.stringify(data));
+                        setBook(data);
+                        if (descriptionTextRef.current) {
+                            const isTextOverflowing = descriptionTextRef.current.scrollHeight > descriptionTextRef.current.clientHeight;
+                            setIsOverflowing(isTextOverflowing);
+                        }
+                        findBookPrices(data?.volumeInfo?.title, data?.volumeInfo?.authors[0]).then((bookPrices) => {
+                            console.log(bookPrices);
+                            setAllBookPrice(bookPrices);
+
+                            const shopBookPrices: ShopBookPrice[] = bookPrices.map((shopData: BookPrice) => {
+                                const book = shopData.books[0];
+                                return {
+                                    shop: shopData.shop,
+                                    book: book,
+                                };
+                            }).filter((item: ShopBookPrice) => item.book !== undefined && item.book.price !== "");
+
+                            setBookPrice(shopBookPrices);
+                        });
+                    });
                 }
 
                 const bookReviews = await getAllBookReviews(gbId.id);
                 console.log(bookReviews)
                 if (bookReviews != null)
                     setbookReviews(bookReviews);
-
-                getGBook(gbId.id).then((data) => {
-                    console.log(gbId.id);
-                    console.log("Book data");
-                    console.log(data);
-                    const keyStorage = `/books/${gbId}`;
-                    localStorage.setItem(keyStorage, JSON.stringify(data));
-                    setBook(data);
-                    if (descriptionTextRef.current) {
-                        const isTextOverflowing = descriptionTextRef.current.scrollHeight > descriptionTextRef.current.clientHeight;
-                        setIsOverflowing(isTextOverflowing);
-                    }
-                    //console.log(data?.volumeInfo?.industryIdentifiers);
-                    findBookPrices(data?.volumeInfo?.title, data?.volumeInfo?.authors[0]).then((bookPrices) => {
-                        console.log(bookPrices);
-                        setAllBookPrice(bookPrices);
-
-                        const shopBookPrices: ShopBookPrice[] = bookPrices.map((shopData: BookPrice) => {
-                            const book = shopData.books[0];
-                            return {
-                                shop: shopData.shop,
-                                book: book,
-                            };
-                        }).filter((item: ShopBookPrice) => item.book !== undefined && item.book.price !== "");
-
-                        setBookPrice(shopBookPrices);
-                    });
-                });
 
             } catch (error) {
                 console.error('Error fetching game data:', error);
@@ -128,13 +176,21 @@ function BookPage() {
         }
     };
 
+    const handleClick = (author: string) => {
+        window.open(`/books/author?q=${author}`, '_blank');
+    };
+
     return (
         <BookProvider initialStatus={uBook?.status} initialUserRating={uBook?.userRating}>
             <Stack className="book-page" direction="horizontal" style={{paddingTop: "20px"}} gap={5}>
                 <Card data-bs-theme="dark" style={{width: '15rem'}} className="text-center" border="light">
-                    <Card.Img variant="top" src={book?.volumeInfo?.imageLinks?.thumbnail || ''}/>
+                    <Card.Img variant="top" src={book === undefined ?
+                        uBook?.book.coverUrl:
+                        (book?.volumeInfo?.imageLinks?.thumbnail || '')}/>
                     <Card.Body>
-                        <Card.Title>{book?.volumeInfo.title}</Card.Title>
+                        <Card.Title>{book === undefined ?
+                            uBook?.book.title:
+                            book?.volumeInfo?.title}</Card.Title>
                         <Card.Text>
                             <Container>
                             </Container>
@@ -146,7 +202,11 @@ function BookPage() {
                         )}
                     </Card.Body>
                     <Card.Footer className="text-muted">
-                        {formatDate(book?.volumeInfo?.publishedDate) === undefined ? "Неизвестно" : formatDate(book?.volumeInfo?.publishedDate)}
+                        {book === undefined ?
+                            formatDate(uBook?.book.publishedDate) === undefined ?
+                                "Неизвестно" : formatDate(uBook?.book.publishedDate):
+                            formatDate(book?.volumeInfo?.publishedDate) === undefined ?
+                                "Неизвестно" : formatDate(book?.volumeInfo?.publishedDate)}
                     </Card.Footer>
                 </Card>
 
@@ -154,7 +214,10 @@ function BookPage() {
                     <div style={{maxWidth: '500px'}}>
                         {/*height: '20rem'*/}
                         <h2>Описание:</h2>
-                        <span className={`book__description ${expanded ? "expanded" : ""}`} ref={descriptionTextRef}>{book?.volumeInfo?.description}</span>
+                        <span className={`book__description ${expanded ? "expanded" : ""}`} ref={descriptionTextRef}>
+                            {book === undefined ?
+                                uBook?.book.description:
+                                book?.volumeInfo?.description}</span>
                         {isOverflowing && (
                             <button className='book__description-button' onClick={() => setExpanded(!expanded)}>
                                 {expanded ? "Скрыть" : "Читать далее"}
@@ -200,13 +263,27 @@ function BookPage() {
                     <Card data-bs-theme="dark" style={{width: '15rem'}}>
                     <Card.Header>Информация о книге:</Card.Header>
                         <Card.Body>
-                            Автор: {book?.volumeInfo?.authors[0]}<br/>
-                            Количество страниц: {book?.volumeInfo?.pageCount}<br/>
-                            Издатель: {book?.volumeInfo?.publisher}<br/>
+                            Автор: {book === undefined ?
+                            (uBook?.book.authors.map(author => (
+                                <a onClick={() => {handleClick(author.name)}}
+                                   style={{textDecoration: 'none', color: 'inherit', cursor: 'pointer'}}
+                                   key={author.id}>{author.name}</a>
+                            ))):
+                            book?.volumeInfo?.authors[0]}<br/>
+                            Количество страниц: {book === undefined ?
+                                uBook?.book.pageCount:
+                                book?.volumeInfo?.pageCount}<br/>
+                            Издатель: {book === undefined ?
+                                uBook?.book.publisher:
+                                book?.volumeInfo?.publisher}<br/>
                             Жанр:
-                            {book?.volumeInfo?.categories?.map((category, index) => (
+                            {book === undefined ?
+                                (uBook?.book.genres.map((category, index) => (
+                                    <div className="book-info-genre" key={index}>{category}</div>
+                                ))) :
+                                (book?.volumeInfo?.categories?.map((category, index) => (
                                 <div className="book-info-genre" key={index}>{category}</div>
-                            ))}
+                                )))}
                         </Card.Body>
                         <Card.Footer>
                         </Card.Footer>

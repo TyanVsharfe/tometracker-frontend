@@ -14,6 +14,7 @@ import {RootState} from "./store/store.ts";
 import {verifySession} from "./store/authSlice.ts";
 import UserInfoPage from "./pages/User/UserInfoPage.tsx";
 import UserSettingsPage from "./pages/User/UserSettingsPage.tsx";
+import AuthorPage from "./pages/Books/AuthorPage.tsx";
 
 function App() {
     const dispatch = useDispatch();
@@ -54,6 +55,7 @@ function App() {
         <Navigation />
         <Routes>
             {/*<Route path="/" element={<HomePage />} />*/}
+            <Route path="/books/author" element={<AuthorPage/>} />
             <Route path="/login" element={<LoginPage/>} />
             <Route path="/registration" element={<RegisterPage/>} />
             <Route path="/account" element={<UserInfoPage />} />
