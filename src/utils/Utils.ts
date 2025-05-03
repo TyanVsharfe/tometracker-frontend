@@ -26,3 +26,10 @@ export const getScoreClass = (score: number): string => {
     if (score >= 40) return "review-score medium";
     return "review-score low";
 };
+
+export const getRatingColor = (score: number): string => {
+    if (score < 40) return '#e53935';
+    if (score < 50) return '#fb8c00';
+    if (score < 70) return '#fdd835';
+    return '#43a047';
+};

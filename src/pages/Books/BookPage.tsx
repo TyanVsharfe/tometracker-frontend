@@ -1,11 +1,11 @@
 import React, {useState, useEffect, useRef} from 'react';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
-import {Button, Stack, Table} from "react-bootstrap";
+import {Button, Dropdown, Stack, Table} from "react-bootstrap";
 import {useNavigate, useParams} from "react-router-dom";
 import {addBook, gBook, getGBook} from "../../services/bookService.ts";
 import BookControls from "../../components/BookControls.tsx";
-import {formatDate} from "../../utils/Utils.ts";
+import {formatDate, getRatingColor, getScoreClass} from "../../utils/Utils.ts";
 import BookInfo from "../../components/BookInfo.tsx";
 import {BookProvider} from "../../components/BookProvider.tsx";
 import Form from "react-bootstrap/Form";
@@ -41,6 +41,7 @@ function BookPage() {
     const [showUserReview, setShowUserReview] = useState(false);
     const [showUsersReview, setShowUsersReview] = useState(false);
     const [reviewContent, setReviewContent] = useState("");
+    const [sortOrder, setSortOrder] = useState('none');
 
     const [expanded, setExpanded] = useState(false);
     const [isOverflowing, setIsOverflowing] = useState(false);
@@ -180,6 +181,12 @@ function BookPage() {
         window.open(`/books/author?q=${author}`, '_blank');
     };
 
+    const reviewsWithScores = bookReviews != undefined ? bookReviews.filter(review => review.userRating !== null) : [];
+
+    const averageScore = reviewsWithScores.length > 0
+        ? Math.round(reviewsWithScores.reduce((acc, review) => acc + review.userRating, 0) / reviewsWithScores.length)
+        : 0;
+
     return (
         <BookProvider initialStatus={uBook?.status} initialUserRating={uBook?.userRating}>
             <Stack className="book-page" direction="horizontal" style={{paddingTop: "20px"}} gap={5}>
@@ -265,14 +272,20 @@ function BookPage() {
                         <Card.Body>
                             Автор: {book === undefined ?
                             (uBook?.book.authors.map(author => (
-                                <a onClick={() => {handleClick(author.name)}}
+                                <a onClick={() => {
+                                    handleClick(author.name)
+                                }}
                                    style={{textDecoration: 'none', color: 'inherit', cursor: 'pointer'}}
                                    key={author.id}>{author.name}</a>
-                            ))):
-                            book?.volumeInfo?.authors[0]}<br/>
+                            ))) :
+                            <a onClick={() => {
+                                handleClick(book?.volumeInfo?.authors[0])
+                            }}
+                               style={{textDecoration: 'none', color: 'inherit', cursor: 'pointer'}}
+                               key={1}>{book?.volumeInfo?.authors[0]}</a>}<br/>
                             Количество страниц: {book === undefined ?
-                                uBook?.book.pageCount:
-                                book?.volumeInfo?.pageCount}<br/>
+                            uBook?.book.pageCount :
+                            book?.volumeInfo?.pageCount}<br/>
                             Издатель: {book === undefined ?
                                 uBook?.book.publisher:
                                 book?.volumeInfo?.publisher}<br/>
@@ -308,11 +321,27 @@ function BookPage() {
                 <Modal.Header closeButton>
                     <Modal.Title>Цены на книгу</Modal.Title>
                 </Modal.Header>
-
-                <Modal.Body className="modal-dialog-scrollable">
+                <Modal.Body className="modal-dialog-scrollable pt-2">
                     <Container style={{height: '30rem', overflowY: 'auto'}}>
                         {allBookPrice != undefined ? (
                             <>
+                                <div className="pt-2 pb-0 d-flex justify-content-end">
+                                    <Dropdown>
+                                        <Dropdown.Toggle variant="outline-primary" size="sm" id="dropdown-sort">
+                                            {sortOrder === 'none' ? 'Сортировка по цене' :
+                                                sortOrder === 'asc' ? 'От дешевых к дорогим' :
+                                                    'От дорогих к дешевым'}
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item onClick={() => setSortOrder('none')}>Без
+                                                сортировки</Dropdown.Item>
+                                            <Dropdown.Item onClick={() => setSortOrder('asc')}>От дешевых к
+                                                дорогим</Dropdown.Item>
+                                            <Dropdown.Item onClick={() => setSortOrder('desc')}>От дорогих к
+                                                дешевым</Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </div>
                                 <Table responsive>
                                     <thead>
                                     <tr>
@@ -324,26 +353,42 @@ function BookPage() {
                                     </thead>
                                     <tbody>
                                     {
-                                        allBookPrice.map(book => (
-                                            book.books.map(bookInfo => (
-                                                <tr>
-                                                    <td className='book-price__item'>{book.shop}</td>
-                                                    <td className='book-price__item'><Title title={bookInfo.title}/></td>
-                                                    <td className='book-price__item'>{bookInfo.price}</td>
+                                        [...allBookPrice]
+                                            .flatMap(book =>
+                                                book.books.map(bookInfo => ({
+                                                    shop: book.shop,
+                                                    bookInfo: bookInfo
+                                                }))
+                                            )
+                                            .filter(item => item.bookInfo.price && item.bookInfo.price !== 'Нет в продаже')
+                                            .sort((a, b) => {
+                                                if (sortOrder === 'none') return 0;
+
+                                                const priceA = parseFloat(a.bookInfo.price.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+                                                const priceB = parseFloat(b.bookInfo.price.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
+
+                                                return sortOrder === 'asc' ? priceA - priceB : priceB - priceA;
+                                            })
+                                            .map((item, index) => (
+                                                <tr key={`book-${index}`}>
+                                                    <td className='book-price__item'>{item.shop}</td>
+                                                    <td className='book-price__item'><Title
+                                                        title={item.bookInfo.title}/></td>
+                                                    <td className='book-price__item'>{item.bookInfo.price}</td>
                                                     <td className='book-price__item'>
                                                         <Button
-                                                        variant="primary"
-                                                        disabled={!bookInfo.url}
-                                                        onClick={() => {
-                                                            if (bookInfo.url) {
-                                                                window.open(bookInfo.url, '_blank');
-                                                            }
-                                                        }}>
-                                                        Купить
-                                                    </Button></td>
+                                                            variant="primary"
+                                                            disabled={!item.bookInfo.url}
+                                                            onClick={() => {
+                                                                if (item.bookInfo.url) {
+                                                                    window.open(item.bookInfo.url, '_blank');
+                                                                }
+                                                            }}>
+                                                            Купить
+                                                        </Button>
+                                                    </td>
                                                 </tr>
                                             ))
-                                        ))
                                     }
                                     </tbody>
                                 </Table>
@@ -358,7 +403,7 @@ function BookPage() {
             </Modal>
 
             <Modal show={showUserReview}
-                   //size={"lg"}
+                //size={"lg"}
                    centered={true}
                    onHide={() => {
                        handleCloseUserReview();
@@ -394,7 +439,7 @@ function BookPage() {
             </Modal>
 
             <Modal show={showUsersReview}
-                   // size={"lg"}
+                // size={"lg"}
                    centered={true}
                    onHide={() => {
                        handleCloseUsersReview();
@@ -405,10 +450,41 @@ function BookPage() {
                     <Modal.Title>Рецензии пользователей</Modal.Title>
                 </Modal.Header>
 
-                <Modal.Body className="modal-dialog-scrollable" style={{maxHeight:'30rem', overflowY: 'auto'}}>
+                {averageScore !== null && (
+                    <div style={{
+                        backgroundColor: '#fff8e1',
+                        padding: '10px 16px',
+                        margin: '1rem 1.5rem 0.5rem',
+                        borderRadius: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px'
+                    }}>
+                        <div style={{
+                            width: '20px',
+                            height: '20px',
+                            borderRadius: '50%',
+                            backgroundColor: getRatingColor(averageScore)
+                        }}></div>
+                        <div>
+                            <strong>Средняя оценка: {averageScore}</strong><br />
+                            <span style={{ fontSize: '0.9rem', color: '#777' }}>
+                                (на основе отзывов с оценкой: {reviewsWithScores.length})
+                            </span>
+                        </div>
+                    </div>
+                )}
+
+
+                <Modal.Body className="modal-dialog-scrollable" style={{maxHeight: '30rem', overflowY: 'auto'}}>
                     {bookReviews ? (
                         <>
-                            <Stack style={{maxWidth: '50rem', display: 'flex', justifyContent: 'start', justifySelf: 'start'}}>
+                            <Stack style={{
+                                maxWidth: '50rem',
+                                display: 'flex',
+                                justifyContent: 'start',
+                                justifySelf: 'start'
+                            }}>
                                 {
                                     bookReviews.map((bookReview: BookReview) => (
                                         <Review bookReview={bookReview}/>
@@ -416,7 +492,7 @@ function BookPage() {
                                 }
                             </Stack>
                         </>
-                    ): <></>}
+                    ) : <></>}
                 </Modal.Body>
 
                 <Modal.Footer style={{border: 'none'}}>

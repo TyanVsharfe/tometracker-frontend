@@ -8,7 +8,7 @@ interface TitleProps {
 }
 
 const Title: React.FC<TitleProps> = ({ title }) => {
-    const truncatedTitle = title.length > 70 ? `${title.slice(0, 70)}...` : title;
+    const truncatedTitle = title.length > 85 ? `${title.slice(0, 85)}...` : title;
 
     return (
         <OverlayTrigger

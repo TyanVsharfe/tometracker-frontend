@@ -17,7 +17,7 @@ const PieChartWithCustomizedLabel = ({ userBookQuantity, genreQuantity, mode }: 
 
         return (
             <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central">
-                {`${(percent * 100).toFixed(0)}%`}
+                {/*{`${(percent * 100).toFixed(0)}%`}*/}
             </text>
         );
     };
@@ -49,9 +49,31 @@ const PieChartWithCustomizedLabel = ({ userBookQuantity, genreQuantity, mode }: 
                         ))}
                     </Pie>
                     <Tooltip />
-                    <Legend />
+                    <br/>
+                    <Legend content={<CustomLegend />} />
                 </PieChart>
             </ResponsiveContainer>
+        </div>
+    );
+};
+
+const CustomLegend = ({ payload }) => {
+    return (
+        <div style={{ maxHeight: '185px', overflowY: 'auto', paddingTop: '20px' }}>
+            <ul style={{ listStyleType: 'none', padding: 0 }}>
+                {payload.map((entry, index) => (
+                    <li key={`item-${index}`} style={{display: 'flex', alignItems: 'center', marginBottom: '5px'}}>
+                        <div style={{
+                            width: '12px',
+                            height: '12px',
+                            borderRadius: '50%',
+                            backgroundColor: entry.color,
+                            marginRight: '8px'
+                        }}/>
+                        {entry.value}
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 };

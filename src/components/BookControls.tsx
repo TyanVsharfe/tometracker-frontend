@@ -77,7 +77,7 @@ function BookControls() {
                     <Button variant="outline-primary" onClick={handleClose}>Закрыть</Button>
                     <Button variant="primary" onClick={() => {
                         handleClose();
-                        updateBookRating(gbId.id, storyRating).then(rating => {setUserRating(rating)});
+                        updateBookRating(gbId.id, storyRating).then(rating => {setUserRating(rating * 10)});
                     }}>Сохранить оценку</Button>
                 </Modal.Footer>
             </Modal>

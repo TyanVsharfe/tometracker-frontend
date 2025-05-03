@@ -2,15 +2,10 @@ import React, {useEffect, useState} from "react";
 import Container from "react-bootstrap/Container";
 import {Alert, Stack} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
-import Col from "react-bootstrap/Col";
 import Form from 'react-bootstrap/Form';
-import Card from "react-bootstrap/Card";
 import {
-    BookReview,
-    deleteBookReview,
     getAllBooksGenres,
     getBooks,
-    updateBookReview
 } from "../../services/userBookService.ts";
 
 import "../style/style.css"
@@ -20,6 +15,7 @@ import {Book} from "../../services/bookService.ts";
 import Title from "../../components/Title.tsx";
 import AccountNav from "../../components/AccountNav.tsx";
 import Modal from "react-bootstrap/Modal";
+import BookList from "../../components/BookList.tsx";
 
 function UserBooksPage() {
     const [userBooks, setUserBooks] = useState<Book[]>([]);
@@ -90,31 +86,7 @@ function UserBooksPage() {
 
         if (Array.isArray(booksResults)) {
             return (
-                <Container className="justify-content-start align-items-center books-list">
-                    {
-                        booksResults.map((book: Book, index: number) => (
-                            <Col key={index} style={{paddingBottom: '20px', flex: '0 1 calc(20%)', width: '9rem', display: 'flex', justifyContent: 'center'}}>
-                                <Card data-bs-theme='dark' style={{ width: '9rem'}}  className='text-center' border='light'>
-                                    <Card.Img className='book__cover' variant="top" src={book?.coverUrl || ''}/>
-                                    <Card.Body className='book__body'>
-                                        <Container style={{height:'60px'}}>
-                                            <Card.Title className="book__title">
-                                                {book.title}
-                                            </Card.Title>
-                                        </Container>
-                                        <Card.Text>
-                                        </Card.Text>
-                                        <Button style={{ width: '90%', fontSize: '12px'}} variant='primary' href={`/books/${book.gbId}`}>Подробнее</Button>
-                                    </Card.Body>
-                                    <Card.Footer className='text-muted'>
-                                        {/*{book.first_release_date*/}
-                                        {/*    ? new Date(book.first_release_date * 1000).toLocaleDateString()*/}
-                                        {/*    : book.release_dates && book.release_dates[0].y}*/}
-                                    </Card.Footer>
-                                </Card>
-                            </Col>)
-                        )}
-                </Container>
+                <BookList books={booksResults} booksPerPage={18}/>
             )
         }
         else {
