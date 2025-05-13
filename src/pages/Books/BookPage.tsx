@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
+import Accordion from 'react-bootstrap/Accordion';
 import {Button, Dropdown, Stack, Table} from "react-bootstrap";
 import {useNavigate, useParams} from "react-router-dom";
 import {addBook, gBook, getGBook} from "../../services/bookService.ts";
@@ -13,6 +14,7 @@ import {BookPrice, findBookPrices, ShopBookPrice} from "../../services/bookPrice
 
 import "../style/book-card.css"
 import "../style/modal.css"
+import "../style/accordion.css"
 import {
     addUserBook,
     BookReview,
@@ -231,38 +233,50 @@ function BookPage() {
                             </button>
                         )}
                     </div>
-                    <Container style={{display: 'flex', flexDirection: 'column', padding: '0px 0px 0px 0px'}}>
-                        {bookPrice != undefined ? (
-                            <>
-                                <Table style={{alignItems: 'start'}} responsive>
-                                    <thead>
-                                    <tr>
-                                        <th>Магазин</th>
-                                        <th>Цена</th>
-                                        <th>Ссылка</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {
-                                        bookPrice.map(book => (
-                                            <tr>
-                                                <td>{book.shop}</td>
-                                                <td>{book.book.price}</td>
-                                                <td><a style={{
-                                                    textDecoration: 'none',
-                                                    pointerEvents: book.book.url ? 'auto' : 'none',
-                                                    color: book.book.url ? 'inherit' : 'gray'
-                                                }} href={`${book.book.url}`}>Купить</a></td>
-                                            </tr>
-                                        ))
-                                    }
-                                    </tbody>
-                                </Table>
-                                <Button onClick={handleShow}>Подробнее</Button>
-                            </>
+                    <Accordion defaultActiveKey="0" flush={true} className="accordion">
+                        <Accordion.Item eventKey="0">
+                            <Accordion.Header className="accordion-top">
+                                <Button style={{width: "100%"}}>Цены на книгу</Button>
+                            </Accordion.Header>
+                            <Accordion.Body>
+                                <Container style={{display: 'flex', flexDirection: 'column', padding: '0px 0px 0px 0px'}}>
+                                    {bookPrice != undefined ? (
+                                        <>
+                                            <Table style={{alignItems: 'start'}} responsive>
+                                                <thead>
+                                                <tr>
+                                                    <th>Магазин</th>
+                                                    <th>Цена</th>
+                                                    <th>Ссылка</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {
+                                                    bookPrice.map(book => (
+                                                        <tr>
+                                                            <td>{book.shop}</td>
+                                                            <td>{book.book.price}</td>
+                                                            <td><a style={{
+                                                                textDecoration: 'none',
+                                                                pointerEvents: book.book.url ? 'auto' : 'none',
+                                                                color: book.book.url ? 'inherit' : 'gray'
+                                                            }} href={`${book.book.url}`}>Купить</a></td>
+                                                        </tr>
+                                                    ))
+                                                }
+                                                </tbody>
+                                            </Table>
+                                            <Button onClick={handleShow}>Подробнее</Button>
+                                            <Accordion.Header>
+                                                <Button style={{width: "100%"}}>Скрыть</Button>
+                                            </Accordion.Header>
+                                        </>
 
-                            ) : <></>}
-                    </Container>
+                                    ) : <></>}
+                                </Container>
+                            </Accordion.Body>
+                        </Accordion.Item>
+                    </Accordion>
                 </Stack>
 
                 <div>
@@ -277,12 +291,8 @@ function BookPage() {
                                 }}
                                    style={{textDecoration: 'none', color: 'inherit', cursor: 'pointer'}}
                                    key={author.id}>{author.name}</a>
-                            ))) :
-                            <a onClick={() => {
-                                handleClick(book?.volumeInfo?.authors[0])
-                            }}
-                               style={{textDecoration: 'none', color: 'inherit', cursor: 'pointer'}}
-                               key={1}>{book?.volumeInfo?.authors[0]}</a>}<br/>
+                            ))) : <></>}
+                            <br/>
                             Количество страниц: {book === undefined ?
                             uBook?.book.pageCount :
                             book?.volumeInfo?.pageCount}<br/>

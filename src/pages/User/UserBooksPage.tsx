@@ -4,6 +4,7 @@ import {Alert, Stack} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from 'react-bootstrap/Form';
 import {
+    getAllBooksAuthors,
     getAllBooksGenres,
     getBooks,
 } from "../../services/userBookService.ts";
@@ -11,7 +12,7 @@ import {
 import "../style/style.css"
 import "../style/book-card.css"
 import "../style/modal.css"
-import {Book} from "../../services/bookService.ts";
+import {Book} from "../../services/userBookService.ts";
 import Title from "../../components/Title.tsx";
 import AccountNav from "../../components/AccountNav.tsx";
 import Modal from "react-bootstrap/Modal";
@@ -22,21 +23,29 @@ function UserBooksPage() {
     const [displayedBooks, setDisplayedBooks] = useState<Book[]>([]);
 
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+    const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
     const [filterStatus, setFilterStatus] = useState("");
     const [activeFilterButtonIndex, setActiveFilterButton] = useState(0);
+
     const [genres, setGenres] = useState([]);
+    const [authors, setAuthors] = useState([]);
     const [filter, setFilter] = useState("");
     const [show, setShow] = useState(false);
+    const [showAuthors, setShowAuthors] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    const handleCloseAuthors = () => setShowAuthors(false);
+    const handleShowAuthors = () => setShowAuthors(true);
 
     useEffect(() => {
         handleUserBooks();
         getAllBooksGenres().then(data => {
             setGenres(data)
-            // console.log("Жанры")
-            // console.log(data);
+        });
+        getAllBooksAuthors().then(data => {
+            console.log(data)
+            setAuthors(data)
         });
     }, [filterStatus]);
 
@@ -45,6 +54,14 @@ function UserBooksPage() {
             prev.includes(genre)
                 ? prev.filter(g => g !== genre)
                 : [...prev, genre]
+        );
+    };
+
+    const handleAuthorChange = (author: string) => {
+        setSelectedAuthors(prev =>
+            prev.includes(author)
+                ? prev.filter(g => g !== author)
+                : [...prev, author]
         );
     };
 
@@ -63,16 +80,22 @@ function UserBooksPage() {
         }
     };
 
-    const filterBooks = (books: Book[], genresFilter: string[], statusFilter: string) => {
-        return books
-            .filter(book => {
-                return !(genresFilter.length > 0 && !book.genres.some(genre => genresFilter.includes(genre)));
-            });
+    const filterBooks = (books: Book[], genresFilter: string[], authorsFilter: string[]) => {
+        return books.filter(book => {
+            const matchesGenres = genresFilter.length === 0 || book.genres.some(genre => genresFilter.includes(genre));
+            const matchesAuthors = authorsFilter.length === 0 || book.authors.some(author => authorsFilter.includes(author.name));
+            return matchesGenres && matchesAuthors;
+        });
     };
 
-
     const applyGenreFilter = () => {
-        const filtered = filterBooks(userBooks, selectedGenres, filterStatus);
+        const filtered = filterBooks(userBooks, selectedGenres, selectedAuthors);
+        setDisplayedBooks(filtered);
+        handleClose();
+    };
+
+    const applyAuthorFilter = () => {
+        const filtered = filterBooks(userBooks, selectedGenres, selectedAuthors);
         setDisplayedBooks(filtered);
         handleClose();
     };
@@ -112,6 +135,20 @@ function UserBooksPage() {
         }
     }
 
+    const renderAuthors = () => {
+        if (Array.isArray(authors)) {
+            return authors.map((authors: string, index: number) => (
+                <Form.Check
+                    key={index}
+                    type="checkbox"
+                    label={authors}
+                    checked={selectedAuthors.includes(authors)}
+                    onChange={() => handleAuthorChange(authors)}
+                />
+            ))
+        }
+    }
+
     return (
         <Container style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
             <AccountNav/>
@@ -145,6 +182,7 @@ function UserBooksPage() {
                             setFilterStatus("None")
                         }}>Без статуса</Button>
                         <Button variant="primary" disabled={activeFilterButtonIndex === 6} onClick={handleShow}>Сортировка по жанру</Button>
+                        <Button variant="primary" disabled={activeFilterButtonIndex === 7} onClick={handleShowAuthors}>Сортировка по автору</Button>
                     </Stack>
                 </Stack>
                 <br/>
@@ -171,6 +209,31 @@ function UserBooksPage() {
                         }}>Отмена</Button>
                         <Button variant="outline-primary" onClick={() => {
                             applyGenreFilter();
+                        }}>Применить</Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal show={showAuthors}
+                    // size={"lg"}
+                       centered={true}
+                       onHide={() => {
+                           handleCloseAuthors();
+                       }}
+                       dialogClassName="modal-user-reviews"
+                       aria-labelledby="example-custom-modal-styling-title">
+                    <Modal.Header style={{border: 'none', paddingBottom: '0px'}} closeButton>
+                        <Modal.Title>Выберите авторов</Modal.Title>
+                    </Modal.Header>
+
+                    <Modal.Body className="modal-dialog-scrollable" style={{maxHeight:'30rem', overflowY: 'auto'}}>
+                        {renderAuthors()}
+                    </Modal.Body>
+                    <Modal.Footer style={{border: 'none'}}>
+                        <Button variant="outline-danger" onClick={() => {
+                            handleCloseAuthors();
+                        }}>Отмена</Button>
+                        <Button variant="outline-primary" onClick={() => {
+                            applyAuthorFilter();
                         }}>Применить</Button>
                     </Modal.Footer>
                 </Modal>

@@ -1,18 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import Form from 'react-bootstrap/Form';
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
-import {loginUser, User} from "../../services/authService.ts";
-import {useNavigate, useSearchParams} from "react-router-dom";
-import {useDispatch} from "react-redux";
-import {verifySession} from "../../store/authSlice.ts";
+import {useSearchParams} from "react-router-dom";
 import {Spinner, Stack} from "react-bootstrap";
-import {gBook, searchAuthor, searchBooks} from "../../services/bookService.ts";
-import {enumGenres, enumSaveGenres} from "../../utils/Enums.ts";
+import {gBook, searchAuthor} from "../../services/bookService.ts";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
-import Row from "react-bootstrap/Row";
-import Modal from "react-bootstrap/Modal";
 
 const AuthorPage: React.FC = () => {
     const [searchParams] = useSearchParams();
@@ -20,10 +13,6 @@ const AuthorPage: React.FC = () => {
 
     const [searchTerm, setsearchTerm] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [show, setShow] = useState(false);
-
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
 
     useEffect(() => {
         const searchQuery = searchParams.get("q");
@@ -86,30 +75,6 @@ const AuthorPage: React.FC = () => {
                     </Container>
                 )}
             </Stack>
-
-            <Modal show={show}
-                // size={"lg"}
-                   centered={true}
-                   onHide={() => {
-                       handleClose();
-                   }}
-                   dialogClassName="modal-user-reviews"
-                   aria-labelledby="example-custom-modal-styling-title">
-                <Modal.Header style={{border: 'none', paddingBottom: '0px'}} closeButton>
-                    <Modal.Title>Выберите жанры</Modal.Title>
-                </Modal.Header>
-
-                <Modal.Body className="modal-dialog-scrollable" style={{maxHeight:'30rem', overflowY: 'auto'}}>
-                </Modal.Body>
-                <Modal.Footer style={{border: 'none'}}>
-                    <Button variant="outline-danger" onClick={() => {
-                        handleClose();
-                    }}>Отмена</Button>
-                    <Button variant="outline-primary" onClick={() => {
-                        handleClose();
-                    }}>Применить</Button>
-                </Modal.Footer>
-            </Modal>
         </Container>
     );
 }

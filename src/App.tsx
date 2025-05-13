@@ -16,6 +16,8 @@ import UserInfoPage from "./pages/User/UserInfoPage.tsx";
 import UserSettingsPage from "./pages/User/UserSettingsPage.tsx";
 import AuthorPage from "./pages/Books/AuthorPage.tsx";
 import UserAchievements from "./pages/User/UserAchievements.tsx";
+import RecommendationPage from "./pages/Books/RecommendationPage.tsx";
+import HomePage from "./pages/Books/HomePage.tsx";
 
 function App() {
     const dispatch = useDispatch();
@@ -55,8 +57,9 @@ function App() {
     <>
         <Navigation />
         <Routes>
-            {/*<Route path="/" element={<HomePage />} />*/}
+            <Route path="/main" element={<HomePage />} />
             <Route path="/books/author" element={<AuthorPage/>} />
+            <Route path="/books/recomendations" element={<RecommendationPage/>} />
             <Route path="/login" element={<LoginPage/>} />
             <Route path="/registration" element={<RegisterPage/>} />
             <Route path="/account" element={<UserInfoPage />} />

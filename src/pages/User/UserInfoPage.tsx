@@ -1,85 +1,219 @@
+import { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
-import {ButtonGroup, Stack} from "react-bootstrap";
-
-import "../style/style.css"
-import "../style/book-card.css"
-import AccountNav from "../../components/AccountNav.tsx";
-import React, {useEffect, useState} from "react";
-import {getAllBooksInfo, UserInfo} from "../../services/userBookService.ts";
-import UserBooksBarChart from "../../components/charts/UserBooksBar.tsx";
-import PieChartWithCustomizedLabel from "../../components/charts/PieChartWithCustomizedLabel.tsx";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Button from "react-bootstrap/Button";
+import Badge from "react-bootstrap/Badge";
+import Nav from "react-bootstrap/Nav";
+import Tab from "react-bootstrap/Tab";
+import AccountNav from "../../components/AccountNav.tsx";
+import { getAllBooksInfo, UserInfo } from "../../services/userBookService.ts";
+import { getStatusTranslation } from "../../utils/Enums.ts";
+import CustomBarChart from "../../components/charts/CustomBarChart.tsx";
+import CustomPieChart from "../../components/charts/CustomPieChart.tsx";
+import ReadingGoals from "../../components/ReadingGoals.tsx";
 
 function UserInfoPage() {
     const [userInfo, setUserInfo] = useState<UserInfo>();
-    const [barMode, setBarMode] = useState<number>(0);
-    const [pieMode, setPieMode] = useState<number>(0);
+    const [activeStatusView, setActiveStatusView] = useState("bar");
+    const [activeGenreView, setActiveGenreView] = useState("pie");
+    const [activeTab, setActiveTab] = useState("statistics");
 
     useEffect(() => {
-        const userInfo = getAllBooksInfo();
-        userInfo.then((data: UserInfo) => {
-            setUserInfo(data)
-            console.log(data)
-        })
+        const fetchUserInfo = async () => {
+            try {
+                const data = await getAllBooksInfo();
+                setUserInfo(data);
+            } catch (error) {
+                console.error("Error fetching user info:", error);
+            }
+        };
+
+        fetchUserInfo();
     }, []);
+
+    const getStatusData = () => {
+        if (!userInfo?.userBookQuantity) return [];
+        return userInfo.userBookQuantity.map((item) => ({
+            ...item,
+            category: getStatusTranslation(item.category),
+        }));
+    };
+
+    const getTotalBooks = () => {
+        if (!userInfo?.allBookQuantity) return 0;
+        return userInfo.allBookQuantity;
+    };
+
+    const getReadBooks = () => {
+        if (!userInfo?.userBookQuantity) return 0;
+        const readStatus = userInfo.userBookQuantity.find(item => item.category === "Completed");
+        return readStatus ? readStatus.count : 0;
+    };
 
     return (
         <Container style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
-            <AccountNav/>
+            <AccountNav />
 
-            <Container>
-                <Stack className=".d-flex justify-content-center align-items-center" style={{marginBottom: "40px"}}>
-                    {/*<h1 style={{fontSize: "32px", marginBottom: "10px"}}>Информация</h1>*/}
-                    <p style={{fontSize: "20px", marginBottom: "5px"}}><strong>Имя пользователя:</strong></p>
-                    <p style={{fontSize: "24px"}}>{userInfo?.username}</p>
+            <Tab.Container id="user-tabs" defaultActiveKey="statistics" onSelect={(k) => setActiveTab(k)}>
+                <Row className="mt-4" style={{display: "flex", justifyContent: "center"}}>
+                    <Col lg={4} className="mb-4" style={{ display: "flex", justifyContent: "center", marginRight: "15px"  }}>
+                        <Card className="shadow-sm" style={{ width: "90rem"}}>
+                            <Card.Body className="text-center">
+                                <div className="mb-3">
+                                    <div style={{
+                                        width: "80px",
+                                        height: "80px",
+                                        borderRadius: "50%",
+                                        backgroundColor: "#8884d8",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        color: "white",
+                                        fontSize: "24px",
+                                        margin: "0 auto 15px"
+                                    }}>
+                                        {userInfo?.username?.charAt(0).toUpperCase()}
+                                    </div>
+                                    <h3>{userInfo?.username}</h3>
+                                    <Badge bg={userInfo?.subscription === "Premium" ? "success" : "secondary"}
+                                           className="px-3 py-2">
+                                        {userInfo?.subscription}
+                                    </Badge>
+                                </div>
 
-                    <p style={{fontSize: "20px", marginBottom: "5px"}}><strong>Тип подписки:</strong></p>
-                    <p style={{fontSize: "24px"}}>{userInfo?.subscription}</p>
-                </Stack>
-                {/*<Stack>*/}
-                {/*    {userInfo?.userBookQuantity.map((book) => (*/}
-                {/*        <Container style={{textAlign: 'center'}}>{book.category} {book.bookQuantity}</Container>*/}
-                {/*    ))}*/}
-                {/*</Stack>*/}
-            </Container>
-            <Container style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                paddingBottom: "70px"
-            }}>
-                <h2 style={{alignItems: 'center', textAlign: 'center'}}>Количество книг по статусам:</h2>
-                <ButtonGroup style={{margin: "20px"}}>
-                    <Button onClick={() => {
-                        setBarMode(0)
-                    }}>Столбчатая диаграмма</Button>
-                    <Button onClick={() => {
-                        setBarMode(1)
-                    }}>Круговая диаграмма</Button>
-                </ButtonGroup>
-                {userInfo && (barMode == 0 ? <UserBooksBarChart
-                        userBookQuantity={userInfo.userBookQuantity} genreQuantity={userInfo.bookCountByGenre}
-                        mode={barMode}/> :
-                    <PieChartWithCustomizedLabel
-                        userBookQuantity={userInfo.userBookQuantity} genreQuantity={userInfo.bookCountByGenre}
-                        mode={barMode}/>)}
-            </Container>
-            <Container style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
-                <h2 style={{textAlign: 'center'}}>Распределение по жанрам:</h2>
-                <ButtonGroup style={{margin: "20px"}}>
-                    <Button onClick={() => {
-                        setPieMode(0)
-                    }}>Круговая диаграмма</Button>
-                    <Button onClick={() => {
-                        setPieMode(1)
-                    }}>Столбчатая диаграмма</Button>
-                </ButtonGroup>
-                {userInfo && (pieMode == 0 ?  <PieChartWithCustomizedLabel
-                    userBookQuantity={userInfo.userBookQuantity} genreQuantity={userInfo.bookCountByGenre} mode={pieMode}/> :
-                    <UserBooksBarChart
-                        userBookQuantity={userInfo.userBookQuantity} genreQuantity={userInfo.bookCountByGenre} mode={pieMode} />)}
-            </Container>
+                                <div style={{
+                                    display: "flex",
+                                    justifyContent: "space-around",
+                                    textAlign: "center",
+                                    marginTop: "24px"
+                                }}>
+                                    <div>
+                                        <h5>Всего книг</h5>
+                                        <div style={{ fontSize: "24px", fontWeight: "bold" }}>
+                                            {getTotalBooks()}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5>Жанров</h5>
+                                        <div style={{ fontSize: "24px", fontWeight: "bold" }}>
+                                            {userInfo?.bookCountByGenre?.length || 0}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5>Прочитано</h5>
+                                        <div style={{ fontSize: "24px", fontWeight: "bold" }}>
+                                            {getReadBooks()}
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card.Body>
+
+                            <Card.Footer className="bg-white">
+                                <Nav variant="pills" className="flex-column">
+                                    <Nav.Item>
+                                        <Nav.Link eventKey="statistics">Статистика</Nav.Link>
+                                    </Nav.Item>
+                                    <Nav.Item>
+                                        <Nav.Link eventKey="recommendations">Рекомендации</Nav.Link>
+                                    </Nav.Item>
+                                </Nav>
+                            </Card.Footer>
+                        </Card>
+                    </Col>
+
+                    <Col style={{display: 'contents'}}>
+                        <Tab.Content>
+                            <Tab.Pane eventKey="statistics">
+                                <Row style={{ width: "75rem", height: "35rem"}}>
+                                    <Col md={12} lg={6} className="mb-4">
+                                        <Card className="h-100 shadow-sm">
+                                            <Card.Header className="bg-white d-flex justify-content-between align-items-center">
+                                                <h5 className="mb-0">Книги по статусам</h5>
+                                                <ButtonGroup size="sm">
+                                                    <Button
+                                                        variant={activeStatusView === "bar" ? "primary" : "outline-primary"}
+                                                        onClick={() => setActiveStatusView("bar")}
+                                                    >
+                                                        Столбцы
+                                                    </Button>
+                                                    <Button
+                                                        variant={activeStatusView === "pie" ? "primary" : "outline-primary"}
+                                                        onClick={() => setActiveStatusView("pie")}
+                                                    >
+                                                        Круг
+                                                    </Button>
+                                                </ButtonGroup>
+                                            </Card.Header>
+                                            <Card.Body>
+                                                {userInfo && (activeStatusView === "bar"
+                                                        ? <CustomBarChart data={getStatusData()} nameKey="category" />
+                                                        : <CustomPieChart data={getStatusData()} nameKey="category" />
+                                                )}
+                                            </Card.Body>
+                                        </Card>
+                                    </Col>
+
+                                    <Col md={12} lg={6} className="mb-4">
+                                        <Card className="h-100 shadow-sm">
+                                            <Card.Header className="bg-white d-flex justify-content-between align-items-center">
+                                                <h5 className="mb-0">Распределение по жанрам</h5>
+                                                <ButtonGroup size="sm">
+                                                    <Button
+                                                        variant={activeGenreView === "pie" ? "primary" : "outline-primary"}
+                                                        onClick={() => setActiveGenreView("pie")}
+                                                    >
+                                                        Круг
+                                                    </Button>
+                                                    <Button
+                                                        variant={activeGenreView === "bar" ? "primary" : "outline-primary"}
+                                                        onClick={() => setActiveGenreView("bar")}
+                                                    >
+                                                        Столбцы
+                                                    </Button>
+                                                </ButtonGroup>
+                                            </Card.Header>
+                                            <Card.Body>
+                                                {userInfo && (activeGenreView === "pie"
+                                                        ? <CustomPieChart data={userInfo.bookCountByGenre || []} nameKey="genre" />
+                                                        : <CustomBarChart data={userInfo.bookCountByGenre || []} nameKey="genre" />
+                                                )}
+                                            </Card.Body>
+                                        </Card>
+                                    </Col>
+                                </Row>
+                            </Tab.Pane>
+
+                            <Tab.Pane eventKey="recommendations">
+                                <Card className="shadow-sm">
+                                    <Card.Header className="bg-white">
+                                        <h5 className="mb-0">Рекомендации для вас</h5>
+                                    </Card.Header>
+                                    <Card.Body>
+                                        <p className="text-muted">
+                                            Здесь будут отображаться персонализированные рекомендации книг на основе ваших предпочтений,
+                                            истории чтения и интересов.
+                                        </p>
+
+                                        <div style={{ marginTop: "15px" }}>
+                                            <h6>Что можно добавить в этот раздел:</h6>
+                                            <ul>
+                                                <li>Рекомендации на основе часто читаемых жанров</li>
+                                                <li>Книги, популярные среди пользователей с похожими интересами</li>
+                                                <li>Новинки в ваших любимых жанрах</li>
+                                                <li>Книги того же автора, что вы уже читали</li>
+                                            </ul>
+                                        </div>
+                                    </Card.Body>
+                                </Card>
+                            </Tab.Pane>
+                        </Tab.Content>
+                    </Col>
+                </Row>
+                <ReadingGoals />
+            </Tab.Container>
         </Container>
     );
 }

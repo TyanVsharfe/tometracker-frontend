@@ -84,6 +84,16 @@ export const getAllBooksGenres = async () => {
     return response.data;
 };
 
+export const getAllBooksAuthors = async () => {
+    const headers = {withCredentials: true};
+
+    const response = await axios.get(`${BASE_URL}/books/all-authors`, headers);
+
+    await apiRequest(response)
+
+    return response.data;
+};
+
 export const getAllBookReviews = async (gbId: string | undefined) => {
     const headers = {withCredentials: true};
 

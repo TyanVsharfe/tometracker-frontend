@@ -58,6 +58,12 @@ export const getGBook = async (gbId: string | undefined) => {
     return response.data;
 };
 
+export const getBookRecommendationByGenre = async (genre: string | undefined) => {
+    const response = await axios.get(`${BASE_URL}/books/recommendations?genre=${genre}`);
+    //const response = await axios.get(`${BASE_URL}/gbooks/v2/${gbId}`);
+    return response.data;
+};
+
 export const addBook = async (book: gBook | undefined) => {
     let identifier = "";
     const identifiers = book?.volumeInfo.industryIdentifiers

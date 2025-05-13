@@ -4,7 +4,7 @@ import {Book} from "../services/userBookService.ts";
 import "../pages/style/style.css"
 import "../pages/style/book-card.css"
 
-interface BooksListProps {
+export interface BooksListProps {
     books: Book[];
     booksPerPage?: number;
 }

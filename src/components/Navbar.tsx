@@ -51,7 +51,7 @@ const Navigation: React.FC = () => {
                         )}
                         {/*<Nav.Link href="/search"><i className="bi bi-search" style={{fontSize: '2rem'}}></i></Nav.Link>
                         <Nav.Link href="/account"><i className="bi bi-person-circle" style={{fontSize: '2rem'}}></i></Nav.Link>*/}
-                        <Form onSubmit={handleSubmit}>
+                        <Form onSubmit={handleSubmit} style={{paddingLeft: '5px'}}>
                             <Row>
                                 <Col xs="auto">
                                     <Form.Control
