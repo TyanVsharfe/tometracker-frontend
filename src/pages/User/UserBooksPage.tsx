@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 import {
     getAllBooksAuthors,
     getAllBooksGenres,
-    getBooks,
+    getBooks, UserBook,
 } from "../../services/userBookService.ts";
 
 import "../style/style.css"
@@ -19,8 +19,8 @@ import Modal from "react-bootstrap/Modal";
 import BookList from "../../components/BookList.tsx";
 
 function UserBooksPage() {
-    const [userBooks, setUserBooks] = useState<Book[]>([]);
-    const [displayedBooks, setDisplayedBooks] = useState<Book[]>([]);
+    const [userBooks, setUserBooks] = useState<UserBook[]>([]);
+    const [displayedBooks, setDisplayedBooks] = useState<UserBook[]>([]);
 
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
@@ -29,7 +29,6 @@ function UserBooksPage() {
 
     const [genres, setGenres] = useState([]);
     const [authors, setAuthors] = useState([]);
-    const [filter, setFilter] = useState("");
     const [show, setShow] = useState(false);
     const [showAuthors, setShowAuthors] = useState(false);
 
@@ -70,7 +69,7 @@ function UserBooksPage() {
             getBooks(filterStatus).then(results => {
                 console.log(results);
                 setUserBooks(results);
-                const filtered = filterBooks(results, selectedGenres, filterStatus);
+                const filtered = filterBooks(results, selectedGenres, selectedAuthors);
                 setDisplayedBooks(filtered);
             });
 
@@ -80,11 +79,13 @@ function UserBooksPage() {
         }
     };
 
-    const filterBooks = (books: Book[], genresFilter: string[], authorsFilter: string[]) => {
+    const filterBooks = (books: UserBook[], genresFilter: string[], authorsFilter: string[]) => {
         return books.filter(book => {
-            const matchesGenres = genresFilter.length === 0 || book.genres.some(genre => genresFilter.includes(genre));
-            const matchesAuthors = authorsFilter.length === 0 || book.authors.some(author => authorsFilter.includes(author.name));
-            return matchesGenres && matchesAuthors;
+            const matchesStatus = filterStatus === "" || book.status === filterStatus;
+            const matchesGenres = genresFilter.length === 0 || book.book.genres.some(genre => genresFilter.includes(genre));
+            const matchesAuthors = authorsFilter.length === 0 || book.book.authors.some(author => authorsFilter.includes(author.name));
+
+            return matchesStatus && matchesGenres && matchesAuthors;
         });
     };
 
@@ -102,7 +103,7 @@ function UserBooksPage() {
 
 
     const renderUserBooks = () => {
-        const booksResults = displayedBooks;
+        const booksResults = displayedBooks.map((userBook) => userBook.book);
 
         //console.log("Ниже вывод " + JSON.stringify(booksResults));
         //console.log("Это массив? " + Array.isArray(booksResults));
@@ -167,7 +168,7 @@ function UserBooksPage() {
                         }}>Прочитано</Button>
                         <Button variant="outline-primary" disabled={activeFilterButtonIndex === 2} onClick={() => {
                             setActiveFilterButton(2)
-                            setFilterStatus("Playing")
+                            setFilterStatus("Reading")
                         }}>Читаю</Button>
                         <Button variant="outline-primary" disabled={activeFilterButtonIndex === 3} onClick={() => {
                             setActiveFilterButton(3)

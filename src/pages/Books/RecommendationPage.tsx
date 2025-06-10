@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import Container from "react-bootstrap/Container";
 import {Alert, Spinner, Stack} from "react-bootstrap";
-import {gBook, getBookRecommendationByGenre} from "../../services/bookService.ts";
+import {gBook} from "../../services/bookService.ts";
 import BookList from "../../components/BookList.tsx";
+import {getBookRecommendationByGenre} from "../../services/recommendationService.ts";
 
 const RecommendationPage: React.FC = () => {
     const [searchParams] = useSearchParams();

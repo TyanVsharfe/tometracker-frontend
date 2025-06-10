@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -14,18 +14,26 @@ import { getStatusTranslation } from "../../utils/Enums.ts";
 import CustomBarChart from "../../components/charts/CustomBarChart.tsx";
 import CustomPieChart from "../../components/charts/CustomPieChart.tsx";
 import ReadingGoals from "../../components/ReadingGoals.tsx";
+import {Alert, Spinner} from "react-bootstrap";
+import BookListCarousel from "../../components/BookListCarousel.tsx";
+import {getRecommendationsForUser} from "../../services/recommendationService.ts";
 
 function UserInfoPage() {
     const [userInfo, setUserInfo] = useState<UserInfo>();
+    const [books, setBooks] = useState<Book>([]);
     const [activeStatusView, setActiveStatusView] = useState("bar");
     const [activeGenreView, setActiveGenreView] = useState("pie");
     const [activeTab, setActiveTab] = useState("statistics");
+
+    const recommendationCarouselRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
                 const data = await getAllBooksInfo();
+                const books = await getRecommendationsForUser();
                 setUserInfo(data);
+                setBooks(books);
             } catch (error) {
                 console.error("Error fetching user info:", error);
             }
@@ -51,6 +59,28 @@ function UserInfoPage() {
         if (!userInfo?.userBookQuantity) return 0;
         const readStatus = userInfo.userBookQuantity.find(item => item.category === "Completed");
         return readStatus ? readStatus.count : 0;
+    };
+
+    const renderBookCarousel = (loading: boolean, carouselRef: React.RefObject<HTMLDivElement>) => {
+        if (loading) {
+            return (
+                <Container style={{ display: "flex", justifyContent: "center", paddingBottom: '20px' }}>
+                    <Spinner animation="border" variant="primary" />
+                </Container>
+            );
+        }
+
+        if (!books || books.length === 0) {
+            return (
+                <Container style={{ textAlign: "center", maxWidth: "500px" }}>
+                    <Alert>Книги не найдены</Alert>
+                </Container>
+            );
+        }
+
+        return (
+            <BookListCarousel books={books} carouselRef={carouselRef} width={65}/>
+        );
     };
 
     return (
@@ -192,20 +222,23 @@ function UserInfoPage() {
                                         <h5 className="mb-0">Рекомендации для вас</h5>
                                     </Card.Header>
                                     <Card.Body>
-                                        <p className="text-muted">
-                                            Здесь будут отображаться персонализированные рекомендации книг на основе ваших предпочтений,
-                                            истории чтения и интересов.
-                                        </p>
+                                        {/*<p className="text-muted">*/}
+                                        {/*    Здесь будут отображаться персонализированные рекомендации книг на основе ваших предпочтений,*/}
+                                        {/*    истории чтения и интересов.*/}
+                                        {/*</p>*/}
 
-                                        <div style={{ marginTop: "15px" }}>
-                                            <h6>Что можно добавить в этот раздел:</h6>
-                                            <ul>
-                                                <li>Рекомендации на основе часто читаемых жанров</li>
-                                                <li>Книги, популярные среди пользователей с похожими интересами</li>
-                                                <li>Новинки в ваших любимых жанрах</li>
-                                                <li>Книги того же автора, что вы уже читали</li>
-                                            </ul>
-                                        </div>
+                                        {/*<div style={{ marginTop: "15px" }}>*/}
+                                        {/*    <h6>Что можно добавить в этот раздел:</h6>*/}
+                                        {/*    <ul>*/}
+                                        {/*        <li>Рекомендации на основе часто читаемых жанров</li>*/}
+                                        {/*        <li>Книги, популярные среди пользователей с похожими интересами</li>*/}
+                                        {/*        <li>Новинки в ваших любимых жанрах</li>*/}
+                                        {/*        <li>Книги того же автора, что вы уже читали</li>*/}
+                                        {/*    </ul>*/}
+                                        {/*</div>*/}
+                                        <>
+                                            {renderBookCarousel(false, recommendationCarouselRef)}
+                                        </>
                                     </Card.Body>
                                 </Card>
                             </Tab.Pane>

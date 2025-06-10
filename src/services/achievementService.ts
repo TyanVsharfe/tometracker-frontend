@@ -3,6 +3,7 @@ import axios from "axios";
 const BASE_URL = 'http://localhost:8080/users';
 
 export interface Achievement {
+    id: number;
     name: string;
     description: string;
     category: string;
@@ -11,6 +12,7 @@ export interface Achievement {
 }
 
 export interface UserAchievment {
+    id: number;
     achievement: Achievement;
     achievedAt: string;
     currentProgress: number;

@@ -68,13 +68,13 @@
 }
 
 .book__cover {
-    width: 145px;
     height: 210px;
     object-fit: cover;
 }
 
 .book__body {
-    height: 140px;
+    height: 8.5rem;
+    width: 9rem;
     padding-bottom: 5px;
 }
 
@@ -104,5 +104,11 @@
         justify-content: center;
         align-content: center;
         align-items: center;
+    }
+}
+
+@media (max-width: 1000px) {
+    .books-list {
+        width: 100%;
     }
 }

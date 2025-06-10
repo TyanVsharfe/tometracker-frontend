@@ -92,13 +92,14 @@ const BooksList: React.FC<BooksListProps> = ({ books, booksPerPage = 15 }) => {
 
     return (
         <>
-            <Container className="justify-content-start align-items-center" style={{width: "65rem"}}>
+            <Container className="justify-content-start align-items-center books-list">
                 <Row>
                     {currentBooks.map((book: Book, index: number) => (
                         <Col
                             key={index}
                             xs={6} sm={4} md={3} lg={2}
                             className="mb-4 d-flex justify-content-center"
+                            style={{width:'10.5rem'}}
                         >
                             <Card data-bs-theme='dark' style={{ width: '9rem' }} className='text-center' border='light'>
                                 <Card.Img className='book__cover' variant="top" src={book?.coverUrl || ''} />

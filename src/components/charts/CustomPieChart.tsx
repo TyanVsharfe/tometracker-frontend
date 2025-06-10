@@ -3,8 +3,20 @@ import { PieChart, Pie, Tooltip, ResponsiveContainer, Cell, Legend} from 'rechar
 import {getStatusTranslation} from "../../utils/Enums.ts";
 
 const CustomPieChart = ({ data, nameKey }) => {
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#845EC2', '#D65DB1', '#FF6F91'];
+    //const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#845EC2', '#D65DB1', '#FF6F91'];
+    const generateUniqueColors = (count) => {
+        const colors = [];
+        for (let i = 0; i < count; i++) {
+            const hue = (i * 360) / count;
+            colors.push(`hsl(${hue}, 70%, 50%)`);
+        }
+        return colors;
+    };
+
+    const COLORS = generateUniqueColors(data.length);
     const RADIAN = Math.PI / 180;
+
+
 
     const renderCustomizedLabel = ({
                                        cx, cy, midAngle, innerRadius, outerRadius, percent

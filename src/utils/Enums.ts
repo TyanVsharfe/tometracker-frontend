@@ -1,13 +1,13 @@
 export const enumStatus = {
     Completed: 0,
-    Playing: 1,
+    Reading: 1,
     Planned: 2,
     Abandoned: 3
 }
 
 const statusTranslations: { [key in keyof typeof enumStatus]: string } = {
     Completed: "Прочитано",
-    Playing: "Читаю",
+    Reading: "Читаю",
     Planned: "В планах",
     Abandoned: "Заброшено",
 };

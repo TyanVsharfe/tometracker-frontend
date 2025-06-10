@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Accordion from 'react-bootstrap/Accordion';
-import {Button, Dropdown, Stack, Table} from "react-bootstrap";
+import {Button, Dropdown, Stack, Table, Toast, ToastContainer} from "react-bootstrap";
 import {useNavigate, useParams} from "react-router-dom";
 import {addBook, gBook, getGBook} from "../../services/bookService.ts";
 import BookControls from "../../components/BookControls.tsx";
@@ -11,6 +11,8 @@ import BookInfo from "../../components/BookInfo.tsx";
 import {BookProvider} from "../../components/BookProvider.tsx";
 import Form from "react-bootstrap/Form";
 import {BookPrice, findBookPrices, ShopBookPrice} from "../../services/bookPriceService.ts";
+import { ReactComponent as Bell } from '../../assets/bell.svg';
+import { ReactComponent as SlashBell } from '../../assets/bell-slash.svg';
 
 import "../style/book-card.css"
 import "../style/modal.css"
@@ -28,6 +30,10 @@ import {RootState} from "../../store/store.ts";
 import Modal from "react-bootstrap/Modal";
 import Title from "../../components/Title.tsx";
 import Review from "../../components/Review.tsx";
+import {Shape} from "recharts/types/util/ActiveShapeUtils";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import PriceMonitoringModal from "../../components/PriceMonitoringModal.tsx";
 
 function BookPage() {
     const [book, setBook] = useState<gBook>();
@@ -40,10 +46,16 @@ function BookPage() {
     const navigate = useNavigate(); //
     const isLogin = useSelector((state: RootState) => state.auth.isLogin);
     const [show, setShow] = useState(false);
+    const [showSubscribe, setShowSubscribe] = useState(false);
     const [showUserReview, setShowUserReview] = useState(false);
     const [showUsersReview, setShowUsersReview] = useState(false);
     const [reviewContent, setReviewContent] = useState("");
     const [sortOrder, setSortOrder] = useState('none');
+
+    const [currentPrice, setCurrentPrice] = useState(0);
+    const [targetPrice, setTargetPrice] = useState(0);
+    const [bookUrl, setBookUrl] = useState("");
+    const [storeName, setStoreName] = useState("");
 
     const [expanded, setExpanded] = useState(false);
     const [isOverflowing, setIsOverflowing] = useState(false);
@@ -51,6 +63,14 @@ function BookPage() {
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    const handleCloseSubscribe = () => setShowSubscribe(false);
+    const handleShowSubscribe = (current: number, target: number, bookUrl: string, storeName: string) => {
+        setCurrentPrice(current);
+        setTargetPrice(target);
+        setShowSubscribe(true);
+        setBookUrl(bookUrl);
+        setStoreName(storeName);
+    };
     const handleCloseUsersReview = () => setShowUsersReview(false);
     const handleShowUsersReview = () => setShowUsersReview(true);
     const handleCloseUserReview = () => setShowUserReview(false);
@@ -335,20 +355,51 @@ function BookPage() {
                     <Container style={{height: '30rem', overflowY: 'auto'}}>
                         {allBookPrice != undefined ? (
                             <>
-                                <div className="pt-2 pb-0 d-flex justify-content-end">
-                                    <Dropdown>
+                                <div className="pt-2 pb-0 d-flex justify-content-end" style={{}}>
+                                    <Dropdown style={{paddingRight: '10px'}}>
                                         <Dropdown.Toggle variant="outline-primary" size="sm" id="dropdown-sort">
                                             {sortOrder === 'none' ? 'Сортировка по цене' :
                                                 sortOrder === 'asc' ? 'От дешевых к дорогим' :
                                                     'От дорогих к дешевым'}
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu>
-                                            <Dropdown.Item onClick={() => setSortOrder('none')}>Без
-                                                сортировки</Dropdown.Item>
-                                            <Dropdown.Item onClick={() => setSortOrder('asc')}>От дешевых к
-                                                дорогим</Dropdown.Item>
-                                            <Dropdown.Item onClick={() => setSortOrder('desc')}>От дорогих к
-                                                дешевым</Dropdown.Item>
+                                            <Dropdown.Item onClick={() => setSortOrder('none')}>
+                                                Без сортировки
+                                            </Dropdown.Item>
+                                            <Dropdown.Item onClick={() => setSortOrder('asc')}>
+                                                От дешевых к дорогим
+                                            </Dropdown.Item>
+                                            <Dropdown.Item onClick={() => setSortOrder('desc')}>
+                                                От дорогих к дешевым
+                                            </Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                    <Dropdown>
+                                        <Dropdown.Toggle variant="outline-primary" size="sm" id="dropdown-sort">
+                                            Магазин
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item onClick={() => setSortOrder('none')}>
+                                                Читай город
+                                             </Dropdown.Item>
+                                            <Dropdown.Item onClick={() => setSortOrder('asc')}>
+                                                Литрес
+                                            </Dropdown.Item>
+                                            <Dropdown.Item onClick={() => setSortOrder('asc')}>
+                                                Буквоед
+                                            </Dropdown.Item>
+                                            <Dropdown.Item onClick={() => setSortOrder('asc')}>
+                                                Лабиринт
+                                            </Dropdown.Item>
+                                            <Dropdown.Item onClick={() => setSortOrder('asc')}>
+                                                Book24
+                                            </Dropdown.Item>
+                                            <Dropdown.Item onClick={() => setSortOrder('asc')}>
+                                                Books.ru
+                                            </Dropdown.Item>
+                                            <Dropdown.Item onClick={() => setSortOrder('asc')}>
+                                                Библио-глобус
+                                            </Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </div>
@@ -382,8 +433,31 @@ function BookPage() {
                                             .map((item, index) => (
                                                 <tr key={`book-${index}`}>
                                                     <td className='book-price__item'>{item.shop}</td>
-                                                    <td className='book-price__item'><Title
-                                                        title={item.bookInfo.title}/></td>
+                                                    <td className='book-price__item' style={{display: 'flex', justifyContent: 'space-between'}}>
+                                                        <Title title={item.bookInfo.title}/>
+                                                        <button
+                                                            style={{
+                                                                display: 'flex',
+                                                                justifyContent: 'center',
+                                                                alignItems: 'center',
+                                                                background: 'transparent',
+                                                                border: 'none',
+                                                                padding: '0px 10px',
+                                                                borderRadius: '5px',
+                                                                position: 'relative'
+                                                            }}
+                                                            onClick={() => {handleShowSubscribe(
+                                                                parseFloat(item.bookInfo.price.replace(/[^\d.,]/g, '').replace(',', '.')),
+                                                                parseFloat(item.bookInfo.price.replace(/[^\d.,]/g, '').replace(',', '.')),
+                                                                item.bookInfo.url,
+                                                                item.shop
+                                                            )}}
+                                                        >
+                                                            {index != 3
+                                                                ? (<Bell style={{width: '1.3rem', height: '1.3rem'}}/>)
+                                                                :(<SlashBell style={{width: '1.3rem', height: '1.3rem'}}/>)}
+                                                        </button>
+                                                    </td>
                                                     <td className='book-price__item'>{item.bookInfo.price}</td>
                                                     <td className='book-price__item'>
                                                         <Button
@@ -448,6 +522,9 @@ function BookPage() {
                 </Modal.Footer>
             </Modal>
 
+            <PriceMonitoringModal show={showSubscribe} onHide={handleCloseSubscribe}
+                                  currentPrice={currentPrice} targetPrice={targetPrice} bookId={gbId.id} bookUrl={bookUrl} storeName={storeName} />
+
             <Modal show={showUsersReview}
                 // size={"lg"}
                    centered={true}
@@ -511,6 +588,21 @@ function BookPage() {
                     }}>Закрыть</Button>
                 </Modal.Footer>
             </Modal>
+
+            {/*<ToastContainer position="bottom-end">*/}
+            {/*    <Toast delay={3000} autohide style={{margin:'2rem'}}>*/}
+            {/*        <Toast.Header>*/}
+            {/*            <img*/}
+            {/*                src="holder.js/20x20?text=%20"*/}
+            {/*                className="rounded me-2"*/}
+            {/*                alt=""*/}
+            {/*            />*/}
+            {/*            <strong className="me-auto">Tometracker</strong>*/}
+            {/*            <small>Сейчас</small>*/}
+            {/*        </Toast.Header>*/}
+            {/*        <Toast.Body></Toast.Body>*/}
+            {/*    </Toast>*/}
+            {/*</ToastContainer>*/}
         </BookProvider>
     );
 }
