@@ -1,8 +1,8 @@
 import Container from "react-bootstrap/Container";
 import {Button, ButtonGroup, Card, Col, ProgressBar, Row, Stack} from "react-bootstrap";
 
-import "../style/style.css"
-import "../style/book-card.css"
+import "../styles/style.css"
+import "../styles/book-card.css"
 import AccountNav from "../../components/AccountNav.tsx";
 import React, {useEffect, useState} from "react";
 import {getUserAchievements, UserAchievment} from "../../services/achievementService.ts";
@@ -43,7 +43,7 @@ function UserAchievements() {
                     return (
                         <Col key={id} xs={12} sm={6} md={4} lg={3} className="mb-4 d-flex justify-content-center">
                             <Card style={{ width: "100%", maxWidth: "250px", textAlign: "center", padding: "10px" }}>
-                                {/*{iconUrl && <Card.Img variant="top" src={iconUrl} style={{ maxHeight: "80px", objectFit: "contain" }} />}*/}
+                                {/*{iconUrl && <Card.Img variant="top" src={iconUrl} styles={{ maxHeight: "80px", objectFit: "contain" }} />}*/}
                                 <Card.Body>
                                     <Card.Title id="card-title" style={{
                                         fontSize: "1.1rem",

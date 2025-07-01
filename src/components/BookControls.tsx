@@ -7,7 +7,7 @@ import {enumStatus} from "../utils/Enums.ts"
 import {useBookContext} from "./BookProvider.tsx";
 import {useParams} from "react-router-dom";
 
-import "../pages/style/book-card.css"
+import "../pages/styles/book-card.css"
 import {deleteUserBook, updateBookRating, updateBookStatus} from "../services/userBookService.ts";
 
 function BookControls() {

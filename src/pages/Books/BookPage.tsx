@@ -14,9 +14,9 @@ import {BookPrice, findBookPrices, ShopBookPrice} from "../../services/bookPrice
 import { ReactComponent as Bell } from '../../assets/bell.svg';
 import { ReactComponent as SlashBell } from '../../assets/bell-slash.svg';
 
-import "../style/book-card.css"
-import "../style/modal.css"
-import "../style/accordion.css"
+import "../styles/book-card.css"
+import "../styles/modal.css"
+import "../styles/accordion.css"
 import {
     addUserBook,
     BookReview,
@@ -93,9 +93,6 @@ function BookPage() {
                         if (bookData.review != undefined) {
                             setReviewContent(bookData.review)
                         }
-                        console.log(bookData?.book.authors[0].name);
-                        console.log(bookData?.status);
-                        console.log("---------------------")
 
                         if (descriptionTextRef.current) {
                             const isTextOverflowing = descriptionTextRef.current.scrollHeight > descriptionTextRef.current.clientHeight;
@@ -590,7 +587,7 @@ function BookPage() {
             </Modal>
 
             {/*<ToastContainer position="bottom-end">*/}
-            {/*    <Toast delay={3000} autohide style={{margin:'2rem'}}>*/}
+            {/*    <Toast delay={3000} autohide styles={{margin:'2rem'}}>*/}
             {/*        <Toast.Header>*/}
             {/*            <img*/}
             {/*                src="holder.js/20x20?text=%20"*/}

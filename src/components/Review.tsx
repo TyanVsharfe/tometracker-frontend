@@ -3,7 +3,7 @@ import {getScoreClass} from "../utils/Utils.ts";
 import {ReviewProps} from "../services/userBookService.ts";
 import React, {useEffect, useRef, useState} from "react";
 
-import "../pages/style/review.css"
+import "../pages/styles/review.css"
 
 const Review: React.FC<ReviewProps> = ({ bookReview }) => {
     const [expanded, setExpanded] = useState(false);

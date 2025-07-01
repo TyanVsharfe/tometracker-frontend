@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Container, Col, Card, Button, Pagination, Row } from 'react-bootstrap';
 import {Book} from "../services/userBookService.ts";
-import "../pages/style/style.css"
-import "../pages/style/book-card.css"
+import "../pages/styles/style.css"
+import "../pages/styles/book-card.css"
 
 export interface BooksListProps {
     books: Book[];

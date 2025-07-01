@@ -8,16 +8,12 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { ReactComponent as Logout } from '../assets/logout.svg';
 import { ReactComponent as Bell } from '../assets/bell-fill.svg';
-import "../pages/style/nav.css"
+import "../pages/styles/nav.css"
 
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-import {checkSession, logoutUser} from "../services/authService.ts";
-import BookControls from "./BookControls.tsx";
-import {addBook} from "../services/bookService.ts";
-import {addUserBook} from "../services/userBookService.ts";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../store/store.ts";
 import {logout} from "../store/authSlice.ts";
@@ -28,7 +24,6 @@ import {
     deleteNotification,
     getNotifications,
     markAllNotificationAsRead, markNotificationAsRead,
-    NotificationType,
     PriceNotification
 } from "../services/notificationService.ts";
 import {formatDistanceToNow} from "date-fns";
@@ -45,7 +40,6 @@ const Navigation: React.FC = () => {
     useEffect(() => {
         if (isLogin) {
             getNotifications().then(data => setNotifications(data));
-            console.log(notifications);
         }
     }, [isLogin]);
 
@@ -86,8 +80,19 @@ const Navigation: React.FC = () => {
         setNotifications(prev => prev.filter(notification => notification.id !== id));
     };
 
+    const getUserTimezoneOffset = () => {
+        const now = new Date();
+        return now.getTimezoneOffset() * 60 * 1000;
+    };
+
     const formatTimestamp = (timestamp: string) => {
-        return formatDistanceToNow(timestamp, {
+        const utcDate = new Date(timestamp);
+
+        const timezoneOffset = getUserTimezoneOffset();
+
+        const localDate = new Date(utcDate.getTime() + timezoneOffset);
+
+        return formatDistanceToNow(localDate, {
             addSuffix: true,
             locale: ru
         });
@@ -118,8 +123,8 @@ const Navigation: React.FC = () => {
                             ) : (
                                 <Nav.Link className='nav__link' href="/login">Войти</Nav.Link>
                             )}
-                            {/*<Nav.Link href="/search"><i className="bi bi-search" style={{fontSize: '2rem'}}></i></Nav.Link>
-                        <Nav.Link href="/account"><i className="bi bi-person-circle" style={{fontSize: '2rem'}}></i></Nav.Link>*/}
+                            {/*<Nav.Link href="/search"><i className="bi bi-search" styles={{fontSize: '2rem'}}></i></Nav.Link>
+                        <Nav.Link href="/account"><i className="bi bi-person-circle" styles={{fontSize: '2rem'}}></i></Nav.Link>*/}
                             <button
                                 style={{
                                     display: 'flex',

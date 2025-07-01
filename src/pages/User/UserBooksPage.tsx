@@ -9,9 +9,9 @@ import {
     getBooks, UserBook,
 } from "../../services/userBookService.ts";
 
-import "../style/style.css"
-import "../style/book-card.css"
-import "../style/modal.css"
+import "../styles/style.css"
+import "../styles/book-card.css"
+import "../styles/modal.css"
 import {Book} from "../../services/userBookService.ts";
 import Title from "../../components/Title.tsx";
 import AccountNav from "../../components/AccountNav.tsx";

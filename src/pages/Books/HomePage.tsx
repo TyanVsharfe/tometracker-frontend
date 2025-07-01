@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Container, Spinner, Stack, Alert, Button } from 'react-bootstrap';
 import {Link, useNavigate} from 'react-router-dom';
-import '../style/home-page.css';
+import '../styles/home-page.css';
 import {Book} from "../../services/userBookService.ts";
 import BookListCarousel from "../../components/BookListCarousel.tsx";
 import {getBookRecommendationByGenre, getPopulars} from "../../services/recommendationService.ts";
